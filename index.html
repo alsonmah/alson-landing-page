@@ -1384,7 +1384,7 @@
             // Replace URL below with your Zapier webhook
             const ZAPIER_WEBHOOK = 'https://hooks.zapier.com/hooks/catch/26297437/ularzrf/';
             
-            if (ZAPIER_WEBHOOK !== 'https://hooks.zapier.com/hooks/catch/26297437/ularzrf/') {
+            if (ZAPIER_WEBHOOK && ZAPIER_WEBHOOK.startsWith('https://')) {
                 try {
                     await fetch(ZAPIER_WEBHOOK, {
                         method: 'POST',
