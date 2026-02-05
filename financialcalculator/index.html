@@ -953,6 +953,32 @@ function handleSubmit(e) {
 
   if (!valid) return;
 
+  // Split name into first and last name
+  const nameParts = name.split(' ');
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts.slice(1).join(' ') || '';
+
+  // Send to HubSpot Forms API
+  const hubspotData = {
+    fields: [
+      { name: 'firstname', value: firstName },
+      { name: 'lastname', value: lastName },
+      { name: 'email', value: email },
+      { name: 'phone', value: phone },
+      { name: 'message', value: 'Property Price: $' + document.getElementById('propertyPrice').value.toLocaleString() + ' | Source: Financial Calculator' }
+    ],
+    context: {
+      pageUri: window.location.href,
+      pageName: 'Singapore Property Financial Calculator'
+    }
+  };
+
+  fetch('https://api.hsforms.com/submissions/v3/integration/submit/245071124/d1b90dc4-771f-4817-9eda-ae722144d76a', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(hubspotData)
+  }).catch(err => console.log('HubSpot submission error:', err));
+
   submitted = true;
   closeModal();
   document.getElementById('ctaArea').innerHTML = `
