@@ -1103,6 +1103,68 @@ ${!affordable ? `Cash Shortfall: S$${Math.round(shortfall).toLocaleString()}` : 
     body: JSON.stringify(hubspotData)
   }).catch(err => console.log('HubSpot submission error:', err));
 
+  // ============ ACTIVECAMPAIGN INTEGRATION ============
+  // Add contact to ActiveCampaign and subscribe to Master Contact List (triggers email automation)
+  const acApiUrl = 'https://alsonrealestate84293.api-us1.com';
+  const acApiKey = 'e849c213badc733a4c9e55d11040c527c7779fe7289aaecfce4b62201f96f8ad90681237';
+
+  // Create/Update contact in ActiveCampaign
+  const acContactData = {
+    contact: {
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+      phone: phone,
+      fieldValues: [
+        // Store calculator data in custom fields (these will need to be created in AC)
+        { field: '1', value: String(Math.round(p)) }, // Property Price
+        { field: '2', value: String(Math.round(ltv * 100)) + '%' }, // LTV Ratio
+        { field: '3', value: natMap[n1] || n1 }, // Nationality
+        { field: '4', value: String(o1) }, // Properties Owned
+        { field: '5', value: 'S$' + Math.round(stamp).toLocaleString() }, // Total Stamp Duty
+        { field: '6', value: 'S$' + Math.round(loan).toLocaleString() }, // Loan Amount
+        { field: '7', value: 'S$' + Math.round(monthly).toLocaleString() }, // Monthly Mortgage
+        { field: '8', value: 'S$' + Math.round(total).toLocaleString() }, // Total Upfront Cost
+        { field: '9', value: affordable ? 'Affordable' : 'Shortfall' }, // Affordability Status
+        { field: '10', value: String(safety) + ' months' } // Safety Net
+      ]
+    }
+  };
+
+  // First, create/sync the contact
+  fetch(acApiUrl + '/api/3/contact/sync', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Api-Token': acApiKey
+    },
+    body: JSON.stringify(acContactData)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.contact && data.contact.id) {
+      // Subscribe contact to Master Contact List (list ID 1)
+      // This triggers the "Singapore Property Buyer Nurture Sequence" automation
+      return fetch(acApiUrl + '/api/3/contactLists', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Api-Token': acApiKey
+        },
+        body: JSON.stringify({
+          contactList: {
+            list: 1, // Master Contact List ID
+            contact: data.contact.id,
+            status: 1 // Active subscriber
+          }
+        })
+      });
+    }
+  })
+  .then(response => response ? response.json() : null)
+  .then(data => console.log('ActiveCampaign subscription:', data))
+  .catch(err => console.log('ActiveCampaign error:', err));
+
   submitted = true;
   closeModal();
   document.getElementById('ctaArea').innerHTML = `
