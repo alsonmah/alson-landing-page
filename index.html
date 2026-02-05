@@ -557,11 +557,11 @@
             line-height: 1.7;
         }
 
-        /* ==================== STATS SECTION ==================== */
+        /* ==================== STATS / TRACK RECORD SECTION ==================== */
         .stats {
-            padding: 100px 0;
+            padding: 140px 0;
             position: relative;
-            background: var(--black);
+            background: linear-gradient(180deg, #080808 0%, var(--black) 50%, #080808 100%);
         }
         .stats::before {
             content: '';
@@ -570,21 +570,34 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(ellipse at center, rgba(34,197,94,0.05) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center, rgba(34,197,94,0.08) 0%, transparent 60%);
         }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
+        .stats .container {
             position: relative;
             z-index: 1;
         }
+        .stats-intro {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 60px;
+        }
+        .stats-intro p {
+            font-size: 1.125rem;
+            color: var(--gray-400);
+            line-height: 1.8;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 80px;
+        }
         .stat-card {
             text-align: center;
-            padding: 50px 30px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 24px;
+            padding: 40px 24px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
             transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
@@ -595,18 +608,30 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 2px;
+            height: 3px;
             background: linear-gradient(90deg, transparent, var(--green), transparent);
             opacity: 0;
             transition: opacity 0.4s ease;
         }
         .stat-card:hover {
-            transform: translateY(-10px);
-            border-color: rgba(34,197,94,0.2);
+            transform: translateY(-8px);
+            border-color: rgba(34,197,94,0.3);
+            box-shadow: 0 20px 40px rgba(34,197,94,0.1);
         }
         .stat-card:hover::before { opacity: 1; }
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 20px;
+            background: rgba(34,197,94,0.1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
         .stat-number {
-            font-size: clamp(3rem, 6vw, 4.5rem);
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
             font-weight: 900;
             background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
             -webkit-background-clip: text;
@@ -616,84 +641,319 @@
             letter-spacing: -0.03em;
         }
         .stat-label {
+            font-size: 0.9375rem;
+            color: var(--gray-400);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .stat-desc {
+            font-size: 0.8125rem;
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+        
+        /* Expertise Areas */
+        .expertise-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding-top: 60px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .expertise-block {
+            padding: 40px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+        }
+        .expertise-block h3 {
+            font-size: 1.375rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .expertise-block h3 span {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
+        }
+        .expertise-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .expertise-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .expertise-item:hover {
+            background: rgba(34,197,94,0.05);
+            transform: translateX(8px);
+        }
+        .expertise-item-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(34,197,94,0.2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .expertise-item-icon svg {
+            width: 14px;
+            height: 14px;
+            color: var(--green);
+        }
+        .expertise-item-text h4 {
             font-size: 1rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+        .expertise-item-text p {
+            font-size: 0.875rem;
             color: var(--gray-500);
+            line-height: 1.6;
+        }
             font-weight: 500;
         }
 
-        /* ==================== TESTIMONIALS ==================== */
+        /* ==================== TESTIMONIALS SECTION ==================== */
         .testimonials {
             padding: 140px 0;
-            background: #080808;
+            background: linear-gradient(180deg, #080808 0%, #0a0a0a 50%, #080808 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .testimonials::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(34,197,94,0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .testimonials .container {
+            position: relative;
+            z-index: 1;
+        }
+        .testimonials-intro {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 60px;
+        }
+        .testimonials-intro p {
+            color: var(--gray-400);
+            font-size: 1.125rem;
+            line-height: 1.8;
+        }
+        .testimonials-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-bottom: 60px;
+            padding: 30px 0;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .testimonials-stat {
+            text-align: center;
+        }
+        .testimonials-stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--green);
+            margin-bottom: 4px;
+        }
+        .testimonials-stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .testimonial-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 24px;
+            margin-bottom: 60px;
         }
         .testimonial-card {
             background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 24px;
-            padding: 40px;
+            padding: 36px;
             position: relative;
             transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
         }
         .testimonial-card:hover {
             transform: translateY(-8px);
-            border-color: rgba(255,255,255,0.15);
+            border-color: rgba(34,197,94,0.3);
             box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+        }
+        .testimonial-card.featured {
+            background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(34,197,94,0.02) 100%);
+            border-color: rgba(34,197,94,0.2);
+        }
+        .testimonial-badge {
+            position: absolute;
+            top: -12px;
+            left: 24px;
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+            color: var(--black);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .testimonial-quote {
             position: absolute;
             top: 20px;
-            right: 30px;
-            font-size: 5rem;
+            right: 24px;
+            font-size: 4rem;
             color: rgba(34,197,94,0.1);
             font-family: Georgia, serif;
             line-height: 1;
         }
-        .testimonial-stars {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 24px;
-        }
-        .testimonial-stars svg {
-            width: 20px;
-            height: 20px;
-            fill: #fbbf24;
-        }
-        .testimonial-text {
-            font-size: 1.0625rem;
-            color: var(--gray-300);
-            line-height: 1.8;
-            margin-bottom: 32px;
-        }
-        .testimonial-author {
+        .testimonial-header {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
+            margin-bottom: 20px;
         }
         .testimonial-avatar {
-            width: 56px;
-            height: 56px;
+            width: 52px;
+            height: 52px;
             background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 1.25rem;
+            font-size: 1.125rem;
             color: var(--black);
+            flex-shrink: 0;
         }
-        .testimonial-info h4 {
+        .testimonial-meta h4 {
             font-weight: 600;
             color: var(--white);
-            margin-bottom: 4px;
+            font-size: 1rem;
+            margin-bottom: 2px;
         }
-        .testimonial-info p {
-            font-size: 0.875rem;
+        .testimonial-meta p {
+            font-size: 0.8125rem;
             color: var(--gray-500);
+        }
+        .testimonial-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(34,197,94,0.1);
+            color: var(--green);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-top: 6px;
+        }
+        .testimonial-stars {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 16px;
+        }
+        .testimonial-stars svg {
+            width: 18px;
+            height: 18px;
+            fill: #fbbf24;
+        }
+        .testimonial-text {
+            font-size: 1rem;
+            color: var(--gray-300);
+            line-height: 1.8;
+            flex-grow: 1;
+            margin-bottom: 20px;
+        }
+        .testimonial-highlight {
+            background: rgba(34,197,94,0.1);
+            border-left: 3px solid var(--green);
+            padding: 16px 20px;
+            margin-top: 16px;
+            border-radius: 0 12px 12px 0;
+        }
+        .testimonial-highlight p {
+            font-size: 0.9375rem;
+            color: var(--gray-300);
+            font-style: italic;
+            margin: 0;
+        }
+        .testimonial-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            margin-top: auto;
+        }
+        .testimonial-date {
+            font-size: 0.8125rem;
+            color: var(--gray-600);
+        }
+        .testimonial-verified {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8125rem;
+            color: var(--green);
+        }
+        .testimonial-verified svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Testimonials CTA */
+        .testimonials-cta {
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, rgba(34,197,94,0.08) 0%, rgba(34,197,94,0.02) 100%);
+            border: 1px solid rgba(34,197,94,0.15);
+            border-radius: 24px;
+        }
+        .testimonials-cta h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 12px;
+        }
+        .testimonials-cta p {
+            color: var(--gray-400);
+            margin-bottom: 24px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .testimonials-cta .btn {
+            display: inline-flex;
         }
 
         /* ==================== PROCESS ==================== */
@@ -766,16 +1026,16 @@
             padding: 140px 0;
             background: #080808;
         }
+        .faq .section-subtitle {
+            max-width: 700px;
+            margin: 0 auto 60px;
+        }
         .faq-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 80px;
-            align-items: start;
-        }
-        .faq-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
         }
         .faq-item {
             background: rgba(255,255,255,0.02);
@@ -793,40 +1053,66 @@
             cursor: pointer;
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             gap: 16px;
+        }
+        .faq-question-text {
+            flex: 1;
+        }
+        .faq-pain-point {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--green);
+            margin-bottom: 8px;
+            font-weight: 500;
         }
         .faq-question::after {
             content: '+';
             font-size: 1.5rem;
             color: var(--green);
             transition: transform 0.3s ease;
+            flex-shrink: 0;
+            margin-top: 4px;
         }
         .faq-item.open .faq-question::after { transform: rotate(45deg); }
         .faq-answer {
-            padding: 0 28px 24px;
+            padding: 0 28px 28px;
             font-size: 1rem;
             color: var(--gray-400);
-            line-height: 1.8;
+            line-height: 1.85;
             display: none;
         }
+        .faq-answer p { margin-bottom: 16px; }
+        .faq-answer p:last-child { margin-bottom: 0; }
+        .faq-answer ul {
+            margin: 16px 0;
+            padding-left: 20px;
+        }
+        .faq-answer li {
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .faq-answer strong { color: var(--white); }
         .faq-item.open .faq-answer { display: block; }
-        .faq-cta {
+        .faq-cta-bottom {
             background: linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(34,197,94,0.05) 100%);
             border: 1px solid rgba(34,197,94,0.2);
             border-radius: 24px;
             padding: 50px;
             text-align: center;
-            position: sticky;
-            top: 100px;
+            margin-top: 60px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .faq-cta h3 {
+        .faq-cta-bottom h3 {
             font-size: 1.75rem;
             font-weight: 700;
             color: var(--white);
             margin-bottom: 16px;
         }
-        .faq-cta p {
+        .faq-cta-bottom p {
             color: var(--gray-400);
             margin-bottom: 32px;
             font-size: 1.0625rem;
@@ -1065,7 +1351,8 @@
 
         /* ==================== RESPONSIVE ==================== */
         @media (max-width: 1024px) {
-            .hero-grid, .about-grid, .faq-grid { grid-template-columns: 1fr; gap: 60px; }
+            .hero-grid, .about-grid { grid-template-columns: 1fr; gap: 60px; }
+            .faq-grid { gap: 16px; }
             .hero-content { max-width: 100%; text-align: center; }
             .hero-cta { justify-content: center; }
             .hero-stats { justify-content: center; }
@@ -1073,10 +1360,15 @@
             .about-content { text-align: center; }
             .about-credentials { justify-content: center; }
             .float-badge { display: none; }
-            .faq-cta { position: static; order: -1; margin-bottom: 40px; }
+            .faq-cta-bottom { padding: 40px 30px; margin-top: 40px; }
         }
         @media (max-width: 768px) {
-            .problem-grid, .stats-grid, .testimonial-grid, .process-grid { grid-template-columns: 1fr; }
+            .problem-grid, .testimonial-grid, .process-grid { grid-template-columns: 1fr; }
+            .testimonials-stats { flex-direction: column; gap: 24px; }
+            .testimonial-card { padding: 28px; }
+            .testimonial-badge { top: -10px; left: 16px; font-size: 0.7rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .expertise-section { grid-template-columns: 1fr; }
             .process-grid::before { display: none; }
             .hero-stats { flex-direction: column; gap: 24px; }
             .buyer-type-grid { grid-template-columns: 1fr; }
@@ -1100,9 +1392,9 @@
                         <a href="#process" class="btn btn-outline">See How It Works</a>
                     </div>
                     <div class="hero-stats">
-                        <div class="hero-stat"><h3>500+</h3><p>Clients Helped</p></div>
-                        <div class="hero-stat"><h3>200+</h3><p>Projects Analyzed</p></div>
-                        <div class="hero-stat"><h3>98%</h3><p>Satisfaction</p></div>
+                        <div class="hero-stat"><h3>50+</h3><p>New Launches Analyzed</p></div>
+                        <div class="hero-stat"><h3>Multiple</h3><p>Clients Guided</p></div>
+                        <div class="hero-stat"><h3>99%</h3><p>Satisfaction Rate</p></div>
                     </div>
                 </div>
                 <div></div>
@@ -1163,42 +1455,200 @@
     </section>
 
     <!-- STATS -->
-    <section class="stats">
+    <!-- TRACK RECORD / STATS -->
+    <section class="stats" id="track-record">
         <div class="container">
+            <div class="section-header">
+                <div class="section-label animate fade-up">Track Record</div>
+                <h2 class="section-title animate fade-up delay-1">Numbers That Speak</h2>
+            </div>
+            <div class="stats-intro animate fade-up delay-2">
+                <p>Every recommendation is backed by rigorous analysis. Here's what that commitment looks like in practice.</p>
+            </div>
             <div class="stats-grid stagger">
-                <div class="stat-card"><div class="stat-number">200+</div><div class="stat-label">Developments Analyzed</div></div>
-                <div class="stat-card"><div class="stat-number">500+</div><div class="stat-label">Clients Guided</div></div>
-                <div class="stat-card"><div class="stat-number">98%</div><div class="stat-label">Satisfaction Rate</div></div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">New Launches Analyzed</div>
+                    <div class="stat-desc">Deep-dive research on every major development</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-number">Multiple</div>
+                    <div class="stat-label">Clients Guided</div>
+                    <div class="stat-desc">From first consultation to keys collection</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-number">99%</div>
+                    <div class="stat-label">Satisfaction Rate</div>
+                    <div class="stat-desc">Clients who would recommend my services</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Data-Driven</div>
+                    <div class="stat-desc">Every recommendation backed by analysis</div>
+                </div>
+            </div>
+            
+            <!-- Expertise Areas -->
+            <div class="expertise-section">
+                <div class="expertise-block animate fade-up">
+                    <h3><span>🏗️</span> New Launch Expertise</h3>
+                    <div class="expertise-list">
+                        <div class="expertise-item">
+                            <div class="expertise-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="expertise-item-text">
+                                <h4>Floor Plan Analysis</h4>
+                                <p>Identify efficient layouts, void spaces, and livable sqft vs saleable area</p>
+                            </div>
+                        </div>
+                        <div class="expertise-item">
+                            <div class="expertise-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="expertise-item-text">
+                                <h4>Site Plan Evaluation</h4>
+                                <p>Sun path analysis, nuisance mapping, and privacy considerations</p>
+                            </div>
+                        </div>
+                        <div class="expertise-item">
+                            <div class="expertise-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="expertise-item-text">
+                                <h4>Price Benchmarking</h4>
+                                <p>Compare launch prices against comparable developments and resale data</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="expertise-block animate fade-up delay-1">
+                    <h3><span>📈</span> Investment Analysis</h3>
+                    <div class="expertise-list">
+                        <div class="expertise-item">
+                            <div class="expertise-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="expertise-item-text">
+                                <h4>URA Master Plan Review</h4>
+                                <p>Future developments, zoning changes, and infrastructure impact</p>
+                            </div>
+                        </div>
+                        <div class="expertise-item">
+                            <div class="expertise-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="expertise-item-text">
+                                <h4>Cash Flow Planning</h4>
+                                <p>Progressive payment schedules and TDSR stress-testing</p>
+                            </div>
+                        </div>
+                        <div class="expertise-item">
+                            <div class="expertise-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                            <div class="expertise-item-text">
+                                <h4>Exit Strategy Planning</h4>
+                                <p>Unit differentiation and rental yield projections</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- TESTIMONIALS -->
-    <section class="testimonials">
+    <section class="testimonials" id="testimonials">
         <div class="container">
             <div class="section-header">
-                <div class="section-label animate fade-up">Testimonials</div>
-                <h2 class="section-title animate fade-up delay-1">What My Clients Say</h2>
+                <div class="section-label animate fade-up">Client Stories</div>
+                <h2 class="section-title animate fade-up delay-1">Real Results, Real People</h2>
             </div>
+            <div class="testimonials-intro animate fade-up delay-2">
+                <p>Every client has a unique journey. Here's how data-driven guidance helped them make confident property decisions.</p>
+            </div>
+            
+            <!-- Stats Bar -->
+            <div class="testimonials-stats animate fade-up delay-2">
+                <div class="testimonials-stat">
+                    <div class="testimonials-stat-number">99%</div>
+                    <div class="testimonials-stat-label">Satisfaction</div>
+                </div>
+                <div class="testimonials-stat">
+                    <div class="testimonials-stat-number">5.0</div>
+                    <div class="testimonials-stat-label">Avg Rating</div>
+                </div>
+                <div class="testimonials-stat">
+                    <div class="testimonials-stat-number">100%</div>
+                    <div class="testimonials-stat-label">Would Refer</div>
+                </div>
+            </div>
+            
             <div class="testimonial-grid stagger">
+                <!-- Kellie - First New Launch Buyer -->
+                <div class="testimonial-card featured">
+                    <div class="testimonial-badge">First New Launch</div>
+                    <div class="testimonial-quote">"</div>
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">K</div>
+                        <div class="testimonial-meta">
+                            <h4>Kellie</h4>
+                            <p>2-Bedroom Condo Upgrader</p>
+                            <div class="testimonial-type">🏠 First New Launch Purchase</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-stars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                    <p class="testimonial-text">"As a first-time new launch buyer, I was completely overwhelmed by all the options. Alson broke everything down for me — from understanding the progressive payment scheme to comparing floor plan efficiency across different developments. He never rushed me and always explained the 'why' behind his recommendations."</p>
+                    <div class="testimonial-highlight">
+                        <p>"The best part? He showed me exactly which stacks would have afternoon sun and which units to avoid. I would have never figured that out on my own!"</p>
+                    </div>
+                    <div class="testimonial-footer">
+                        <div class="testimonial-date">Purchased 2024</div>
+                        <div class="testimonial-verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Verified Client</div>
+                    </div>
+                </div>
+                
+                <!-- Wee Huat - Property Investor -->
                 <div class="testimonial-card">
                     <div class="testimonial-quote">"</div>
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">W</div>
+                        <div class="testimonial-meta">
+                            <h4>Wee Huat</h4>
+                            <p>Property Investor</p>
+                            <div class="testimonial-type">📈 Investment Purchase</div>
+                        </div>
+                    </div>
                     <div class="testimonial-stars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-                    <p class="testimonial-text">"Alson's analysis saved us from a big mistake. His data showed the unit we liked wouldn't appreciate well. We chose a different stack and it's already up 12% in value."</p>
-                    <div class="testimonial-author"><div class="testimonial-avatar">K</div><div class="testimonial-info"><h4>Kenneth & Michelle</h4><p>HDB Upgraders</p></div></div>
+                    <p class="testimonial-text">"We had a great experience working with this agent. Very professional, responsive, and knowledgeable about the market. The entire process was smooth and stress-free. Highly recommended to anyone looking to buy, sell, or rent a property."</p>
+                    <div class="testimonial-footer">
+                        <div class="testimonial-date">Purchased 2024</div>
+                        <div class="testimonial-verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Verified Client</div>
+                    </div>
                 </div>
-                <div class="testimonial-card">
+                
+                <!-- XH - Condo Upgrader -->
+                <div class="testimonial-card featured">
+                    <div class="testimonial-badge">Condo Upgrader</div>
                     <div class="testimonial-quote">"</div>
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">X</div>
+                        <div class="testimonial-meta">
+                            <h4>XH</h4>
+                            <p>2-Bedroom Condo Upgrader</p>
+                            <div class="testimonial-type">🔄 Condo to Condo Upgrade</div>
+                        </div>
+                    </div>
                     <div class="testimonial-stars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-                    <p class="testimonial-text">"Never had this level of clarity buying property. Alson broke down floor plan efficiency, facing, future MRT impact, and gave me exactly 3 units to consider. No pressure, just facts."</p>
-                    <div class="testimonial-author"><div class="testimonial-avatar">M</div><div class="testimonial-info"><h4>Marcus Lim</h4><p>Property Investor</p></div></div>
+                    <p class="testimonial-text">"Upgrading from my 2-bedder was stressful — I was worried about timing the sale and purchase, and whether I could afford the upgrade. Alson mapped out my entire cash flow timeline, showed me exactly when payments would be due, and helped me find a unit that fit my budget perfectly."</p>
+                    <div class="testimonial-highlight">
+                        <p>"What impressed me most was how he advised me NOT to rush into certain 'hot' launches. He genuinely cared about my financial comfort, not just closing a deal."</p>
+                    </div>
+                    <div class="testimonial-footer">
+                        <div class="testimonial-date">Purchased 2024</div>
+                        <div class="testimonial-verified"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Verified Client</div>
+                    </div>
                 </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-quote">"</div>
-                    <div class="testimonial-stars"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-                    <p class="testimonial-text">"What impressed me most was how Alson told us NOT to buy certain units. Any other agent would have pushed the sale. He cared about our long-term gains."</p>
-                    <div class="testimonial-author"><div class="testimonial-avatar">S</div><div class="testimonial-info"><h4>Sarah & David</h4><p>First-Time Buyers</p></div></div>
-                </div>
+            </div>
+            
+            <!-- CTA Section -->
+            <div class="testimonials-cta animate fade-up">
+                <h3>Ready to Start Your Property Journey?</h3>
+                <p>Join these satisfied clients and make your next property decision with confidence and clarity.</p>
+                <a href="#book" class="btn btn-primary">Book Your Free Consultation</a>
             </div>
         </div>
     </section>
@@ -1220,25 +1670,176 @@
     </section>
 
     <!-- FAQ -->
-    <section class="faq">
+    <section class="faq" id="faq">
         <div class="container">
             <div class="section-header">
                 <div class="section-label animate fade-up">FAQ</div>
-                <h2 class="section-title animate fade-up delay-1">Common Questions</h2>
+                <h2 class="section-title animate fade-up delay-1">Your Questions, Answered</h2>
+                <p class="section-subtitle animate fade-up delay-2">Common concerns about buying a new launch property — and how we address them.</p>
             </div>
             <div class="faq-grid">
-                <div class="faq-list animate fade-up delay-2">
-                    <div class="faq-item open"><div class="faq-question">Do I have to pay you anything?</div><div class="faq-answer">No. My commission is paid by the developer when you purchase. There's no additional cost to you for working with me.</div></div>
-                    <div class="faq-item"><div class="faq-question">What if I'm not ready to buy yet?</div><div class="faq-answer">That's fine. Many clients take 6-12 months. I'm happy to share insights and help you prepare for when you're ready.</div></div>
-                    <div class="faq-item"><div class="faq-question">Can you help with resale properties?</div><div class="faq-answer">My specialty is new launches where I add the most value with data analysis. For resale, I can recommend trusted colleagues.</div></div>
-                    <div class="faq-item"><div class="faq-question">How are you different from other agents?</div><div class="faq-answer">Most agents show you what's available and hope you buy. I start with your goals, analyze the data, and only recommend units that make sense.</div></div>
-                    <div class="faq-item"><div class="faq-question">What areas do you cover?</div><div class="faq-answer">I cover all new launch developments across Singapore — OCR, RCR, and CCR properties with the same level of data analysis.</div></div>
+                <!-- FAQ 1: Market Peak -->
+                <div class="faq-item animate fade-up">
+                    <div class="faq-question">
+                        <div class="faq-question-text">
+                            <div class="faq-pain-point">Fear of Buying at the Peak</div>
+                            "Property prices are at an all-time high. Am I buying at the peak, and will the value drop after I sign?"
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>It is natural to worry about market timing, but in real estate, <strong>entry price is often more important than market cycles</strong>. New Launch prices are primarily driven by land and construction costs, which have historically trended upwards.</p>
+                        <p>Instead of guessing the "peak," we focus on the <strong>"First Mover Advantage."</strong> Developers typically price the initial launch phase most aggressively to build momentum. By entering early, you secure a lower price than future buyers in the same development (who will pay higher prices for later phases), effectively creating an immediate "safety buffer" or paper gain on your asset.</p>
+                    </div>
                 </div>
-                <div class="faq-cta animate fade-up delay-3">
-                    <h3>Still have questions?</h3>
-                    <p>I'm happy to chat and answer anything about the process.</p>
-                    <a href="https://wa.me/6581863790" class="btn btn-green"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Chat on WhatsApp</a>
+
+                <!-- FAQ 2: Timeline / Homeless Gap -->
+                <div class="faq-item animate fade-up">
+                    <div class="faq-question">
+                        <div class="faq-question-text">
+                            <div class="faq-pain-point">The "Homeless" Gap</div>
+                            "I can't move in for 3 to 4 years. How do I manage the waiting period and rental costs?"
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>The construction wait is the trade-off for getting a brand-new asset with a fresh lease. However, this period offers a significant financial benefit: <strong>Cash Flow Preservation</strong>.</p>
+                        <p>During construction, you are on the Progressive Payment Scheme (PPS). Unlike a resale property where you service the full mortgage immediately, your monthly repayments start very low (often just <strong>$500–$1,500/month in the first year</strong>) and only increase as construction milestones are met. This low initial commitment often frees up enough cash flow to offset rental costs or allows you to save aggressively for your future renovation.</p>
+                    </div>
                 </div>
+
+                <!-- FAQ 3: Showflat vs Reality -->
+                <div class="faq-item animate fade-up">
+                    <div class="faq-question">
+                        <div class="faq-question-text">
+                            <div class="faq-pain-point">Showflat vs. Reality</div>
+                            "The showflat looks spacious, but how do I know my actual unit won't feel cramped and different?"
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Showflats are designed to sell a lifestyle, often using mirrors and missing doors to exaggerate space. To know exactly what you are buying, you must <strong>look beyond the decor and analyze the blueprint</strong>.</p>
+                        <p>We guide you through the structural floor plan to identify "void spaces" (area you pay for but can't walk on) and actual wall placements. We also verify the Specifications Sheet to confirm exactly what materials, flooring, and appliances are included versus what is just ID treatment. We ensure you are buying <strong>"nett livable space,"</strong> not just air.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 4: Progressive Payments -->
+                <div class="faq-item animate fade-up">
+                    <div class="faq-question">
+                        <div class="faq-question-text">
+                            <div class="faq-pain-point">Cash Flow Concerns</div>
+                            "Will the Progressive Payment Scheme strain my monthly cash flow before I can even move in?"
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>The Progressive Payment Scheme is actually designed to be <strong>"wallet-friendly."</strong> You do not pay the full purchase price upfront. You pay in tiers:</p>
+                        <ul>
+                            <li><strong>Foundation Stage:</strong> You typically pay interest on only the first ~10% of the loan.</li>
+                            <li><strong>Reinforced Concrete Stage:</strong> You pay on the next ~10%, and so on.</li>
+                        </ul>
+                        <p>This means your financial load ramps up slowly over 3–4 years, giving you a long "runway" to adapt your finances before the full mortgage kicks in upon TOP (Temporary Occupation Permit). We can provide a <strong>Payment Timeline Calculator</strong> to project your exact monthly cash outlay for every year of construction.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 5: Interest Rates -->
+                <div class="faq-item animate fade-up">
+                    <div class="faq-question">
+                        <div class="faq-question-text">
+                            <div class="faq-pain-point">Interest Rate Volatility</div>
+                            "What if interest rates skyrocket while the condo is being built? Can I still afford the loan?"
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Singapore's strict <strong>TDSR (Total Debt Servicing Ratio)</strong> framework ensures you are "stress-tested" at a higher interest rate (currently ~4.8%+) before you even buy. This creates a built-in safety buffer.</p>
+                        <p>Furthermore, because you only pay interest on the disbursed amount during construction (not the full loan), high interest rates have a much smaller impact on your wallet now than they would on a completed property. By the time your full loan kicks in 3–4 years later, the interest rate cycle may have shifted in your favor.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 6: Lemon Unit -->
+                <div class="faq-item animate fade-up">
+                    <div class="faq-question">
+                        <div class="faq-question-text">
+                            <div class="faq-pain-point">The "Lemon Unit" Fear</div>
+                            "Without seeing the physical building, how do I avoid choosing a 'bad' unit facing the hot sun or bin centre?"
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Picking a unit off a plan is a science, not a lottery. We use a technical <strong>Site Plan Analysis</strong> to protect your purchase:</p>
+                        <ul>
+                            <li><strong>Sun Analysis:</strong> We overlay sun-path simulators to avoid units with direct afternoon (West) sun.</li>
+                            <li><strong>Nuisance Mapping:</strong> We identify and avoid stacks near the bin centre, substation, or noisy main entrance.</li>
+                            <li><strong>Privacy Check:</strong> We calculate setback distances to ensure you aren't looking directly into a neighbor's living room.</li>
+                        </ul>
+                        <p>We help you pick the <strong>"Gem Units"</strong> that offer the best attributes for the price.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 7: View Blockage -->
+                <div class="faq-item animate fade-up">
+                    <div class="faq-question">
+                        <div class="faq-question-text">
+                            <div class="faq-pain-point">Future View Blockage</div>
+                            "I'm paying extra for a view. How do I guarantee a new building won't block it in the future?"
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>We don't guess; we check the government gazette. We analyze the <strong>URA Master Plan</strong> for the empty land plots facing your potential unit.</p>
+                        <p>This tells us the <strong>Plot Ratio</strong> (how high a building can be built there) and the <strong>Zoning</strong> (what can be built). If the land in front is zoned for a high-rise, we will warn you. We ensure you only pay for a view that is legally "safe" (e.g., facing a park, a landed enclave, or a protected conservation area).</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 8: Defects -->
+                <div class="faq-item animate fade-up">
+                    <div class="faq-question">
+                        <div class="faq-question-text">
+                            <div class="faq-pain-point">Defects & Quality Control</div>
+                            "What protections do I have if the workmanship is poor or I find defects when I collect my keys?"
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Unlike buying a resale unit "as-is," a New Launch comes with a <strong>12-Month Defect Liability Period (DLP)</strong>.</p>
+                        <p>For one year from the date of possession, the developer is legally obligated to rectify any workmanship defects (like hollow tiles, scratches, or leaks) at their cost. We recommend engaging a <strong>professional defects inspection specialist</strong> upon key collection to mark up every flaw, ensuring your home is perfect before you move in.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 9: Hidden Costs -->
+                <div class="faq-item animate fade-up">
+                    <div class="faq-question">
+                        <div class="faq-question-text">
+                            <div class="faq-pain-point">Hidden Costs</div>
+                            "Aside from the downpayment, what other 'hidden costs' do I need to prepare for?"
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p><strong>Transparency is key.</strong> Beyond the purchase price, you must budget for Buyer's Stamp Duty (BSD) and ABSD (if applicable).</p>
+                        <p>There are also one-off start-up costs:</p>
+                        <ul>
+                            <li><strong>Legal Fees:</strong> Approx. $2,500 – $3,000.</li>
+                            <li><strong>Surveyor Fee:</strong> Approx. $300 – $500.</li>
+                            <li><strong>Maintenance Fee Advance:</strong> Usually 6 months' worth upon key collection.</li>
+                        </ul>
+                        <p>We provide a comprehensive <strong>"Total Entry Cost" breakdown</strong> before you sign the Option to Purchase (OTP), so every single dollar is accounted for upfront.</p>
+                    </div>
+                </div>
+
+                <!-- FAQ 10: Exit Strategy -->
+                <div class="faq-item animate fade-up">
+                    <div class="faq-question">
+                        <div class="faq-question-text">
+                            <div class="faq-pain-point">Exit Strategy Concerns</div>
+                            "Will I face too much competition when I try to sell or rent this unit in the future?"
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Competition is only a risk if you buy a "generic" unit. We mitigate this by focusing on <strong>Differentiation</strong>.</p>
+                        <p>We help you select a unit with a <strong>Unique Selling Point (USP)</strong>—such as a dumbbell layout (efficient space), a corner unit for privacy, or a pool-facing stack. When you sell in the future, these unique attributes make your unit stand out against the "standard" units in the condo.</p>
+                        <p>Additionally, by buying at the launch price (often lower than the final phases), you enter with a lower cost base than many neighbors, allowing you to price competitively while still making a profit.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA at bottom of FAQ -->
+            <div class="faq-cta-bottom animate fade-up">
+                <h3>Still have questions?</h3>
+                <p>I'm happy to chat and answer anything about the process.</p>
+                <a href="https://wa.me/6581863790" class="btn btn-green"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Chat on WhatsApp</a>
             </div>
         </div>
     </section>
@@ -1382,9 +1983,9 @@
             // ============ ZAPIER WEBHOOK ============
             // This sends leads to HubSpot + ActiveCampaign
             // Replace URL below with your Zapier webhook
-            const ZAPIER_WEBHOOK = 'https://hooks.zapier.com/hooks/catch/26297437/ularzrf/';
+            const ZAPIER_WEBHOOK = 'YOUR_ZAPIER_WEBHOOK_URL';
             
-            if (ZAPIER_WEBHOOK && ZAPIER_WEBHOOK.startsWith('https://')) {
+            if (ZAPIER_WEBHOOK !== 'YOUR_ZAPIER_WEBHOOK_URL') {
                 try {
                     await fetch(ZAPIER_WEBHOOK, {
                         method: 'POST',
