@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Singapore Property Financial Calculator by Alson Mah ‚Äî Calculate stamp duties, loan eligibility, and total costs with real-time precision.">
+<title>Singapore Property Financial Calculator ‚Äî Alson Mah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+body { min-height: 100vh; background: #f8fafc; font-family: 'DM Sans', system-ui, -apple-system, sans-serif; color: #1e293b; -webkit-font-smoothing: antialiased; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+::selection { background: #3b82f6; color: white; }
+input:focus, select:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); outline: none; }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideDown { from { opacity: 0; max-height: 0; overflow:hidden; } to { opacity: 1; max-height: 1200px; } }
+@keyframes shimmer { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.05); } }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(5deg); } }
+@keyframes revealUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+.anim-reveal { opacity: 0; animation: revealUp 0.8s cubic-bezier(0.16,1,0.3,1) forwards; }
+.anim-scale { opacity: 0; animation: scaleIn 0.8s cubic-bezier(0.16,1,0.3,1) forwards; }
+.anim-slide-down { animation: slideDown 0.35s ease forwards; }
+
+/* ===== RANGE SLIDER ===== */
+input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 8px; border-radius: 4px; cursor: pointer; outline: none; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; height: 20px; width: 20px; border-radius: 50%; background: white; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); border: 3px solid #3b82f6; }
+input[type="range"]::-moz-range-thumb { height: 20px; width: 20px; border-radius: 50%; background: white; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); border: 3px solid #3b82f6; }
+
+/* ===== COMMON STYLES ===== */
+.input-field { width: 100%; padding: 0.875rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; font-size: 1rem; transition: all 0.2s ease; outline: none; font-family: inherit; background: white; }
+.select-field { width: 100%; padding: 0.875rem 1rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; font-size: 1rem; transition: all 0.2s ease; outline: none; font-family: inherit; background: white; cursor: pointer; appearance: none; -webkit-appearance: none; padding-right: 2.5rem; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.25rem; }
+.card { background: white; border-radius: 1.25rem; padding: 1.75rem; box-shadow: 0 4px 20px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
+.card:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.12); transform: translateY(-4px); }
+.card-icon { width: 3rem; height: 3rem; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+.card-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+.label { font-size: 0.75rem; font-weight: 600; color: #475569; display: block; margin-bottom: 0.5rem; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.tooltip-wrap { position: relative; display: inline-flex; align-items: center; cursor: help; gap: 0.25rem; }
+.tooltip-icon { display: inline-flex; align-items: center; justify-content: center; width: 1rem; height: 1rem; border-radius: 50%; background: #e2e8f0; color: #64748b; font-size: 0.625rem; font-weight: 700; }
+.tooltip-text { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 0.5rem 0.75rem; border-radius: 0.5rem; font-size: 0.75rem; white-space: nowrap; z-index: 100; margin-bottom: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; pointer-events: none; }
+.tooltip-text::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #1e293b; }
+.tooltip-wrap:hover .tooltip-text { display: block; animation: fadeIn 0.2s ease; }
+.prefix-wrap { position: relative; }
+.prefix-wrap .prefix { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #64748b; font-weight: 600; pointer-events: none; }
+.prefix-wrap input { padding-left: 2.75rem; }
+
+/* ===== TOGGLE SWITCH ===== */
+.toggle { position: relative; display: inline-block; width: 3.5rem; height: 2rem; flex-shrink: 0; }
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-track { position: absolute; cursor: pointer; inset: 0; border-radius: 2rem; background: #e2e8f0; transition: all 0.3s ease; }
+.toggle-track::before { content: ''; position: absolute; left: 0.25rem; top: 0.25rem; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s ease; }
+.toggle input:checked + .toggle-track { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
+.toggle input:checked + .toggle-track::before { left: calc(100% - 1.75rem); }
+
+/* ===== COLLAPSIBLE ===== */
+.collapse-toggle { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+.collapse-arrow { width: 2rem; height: 2rem; border-radius: 0.5rem; background: #f1f5f9; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease; font-size: 0.75rem; }
+.collapse-arrow.open { transform: rotate(180deg); }
+
+/* ===== LAYOUT ===== */
+.container { max-width: 80rem; margin: 0 auto; padding: 3rem 1.5rem; position: relative; z-index: 1; }
+.calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+@media (max-width: 860px) { .calc-grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+  .grid-2 { grid-template-columns: 1fr; }
+  .trust-bar-inner { gap: 1.5rem !important; }
+  .hero-badges { gap: 0.5rem !important; }
+  .hero-badges > div { padding: 0.4rem 0.6rem !important; font-size: 0.7rem !important; }
+  .steps-bar { padding: 1.5rem 1rem !important; }
+}
+
+/* ===== MODAL ===== */
+.modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.9); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; animation: fadeIn 0.3s ease; }
+.modal-overlay.active { display: flex; }
+.modal-content { background: white; border-radius: 1.5rem; padding: 2rem; max-width: 28rem; width: 100%; position: relative; max-height: 90vh; overflow-y: auto; animation: slideUp 0.4s cubic-bezier(0.16,1,0.3,1); }
+.modal-close { position: absolute; top: 1rem; right: 1rem; width: 2.5rem; height: 2.5rem; background: #f1f5f9; border: none; border-radius: 50%; cursor: pointer; font-size: 1.25rem; color: #64748b; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.modal-close:hover { background: #e2e8f0; }
+.error-msg { color: #dc2626; font-size: 0.75rem; margin-top: 0.25rem; display: block; }
+
+/* ===== CTA BUTTON ===== */
+.cta-btn { width: 100%; padding: 1.25rem 2rem; background: linear-gradient(135deg, #f59e0b 0%, #eab308 50%, #fbbf24 100%); color: #1e293b; font-weight: 700; font-size: 1.125rem; border-radius: 1rem; border: none; cursor: pointer; box-shadow: 0 10px 30px rgba(245,158,11,0.4); transition: all 0.3s ease; font-family: inherit; position: relative; overflow: hidden; }
+.cta-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(245,158,11,0.5); }
+.cta-btn:active { transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ===== STICKY TOP BAR ===== -->
+<div id="topBar" style="position:fixed;top:0;left:0;right:0;z-index:1000;transition:all 0.3s ease;">
+  <div id="topBarInner" style="max-width:72rem;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0.5rem 1.5rem;opacity:0;transition:opacity 0.3s ease;">
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <img id="logoSm" alt="Alson Mah" style="width:32px;height:32px;border-radius:0.375rem;object-fit:cover;flex-shrink:0;">
+      <span style="font-weight:700;font-size:0.875rem;color:white;letter-spacing:0.03em;">ALSON MAH.</span>
+    </div>
+    <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);letter-spacing:0.05em;">Property Calculator</span>
+  </div>
+  <div style="height:2px;background:rgba(255,255,255,0.05);">
+    <div id="progressBar" style="height:100%;background:linear-gradient(90deg,#3b82f6,#8b5cf6,#60a5fa);width:0%;transition:width 0.1s;"></div>
+  </div>
+</div>
+
+<!-- ===== FLOATING PARTICLES ===== -->
+<div style="position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;" id="particles"></div>
+
+<!-- ===== HERO HEADER ===== -->
+<header style="background:linear-gradient(160deg,#000 0%,#0a0a0a 40%,#111827 70%,#1e3a8a 100%);color:white;padding:3rem 1.5rem 4rem;text-align:center;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")"></div>
+  <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#3b82f6,#60a5fa,#3b82f6,transparent)"></div>
+
+  <div class="anim-reveal" style="margin-bottom:1.5rem;">
+    <img id="logoHero" alt="Alson Mah - Your Investment Consultant" style="width:120px;height:120px;border-radius:1rem;object-fit:cover;margin:0 auto;display:block;filter:drop-shadow(0 4px 20px rgba(59,130,246,0.3));border:2px solid rgba(255,255,255,0.1);">
+  </div>
+
+  <div class="anim-reveal" style="animation-delay:0.1s;">
+    <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,0.08);backdrop-filter:blur(10px);padding:0.5rem 1rem;border-radius:2rem;margin-bottom:1.5rem;border:1px solid rgba(255,255,255,0.1);">
+      <span style="width:8px;height:8px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;display:inline-block;"></span>
+      <span style="font-size:0.875rem;letter-spacing:0.05em;">Updated for 2025/2026</span>
+    </div>
+  </div>
+
+  <div class="anim-reveal" style="animation-delay:0.15s;">
+    <h1 style="font-size:clamp(2rem,5vw,3rem);font-weight:800;margin-bottom:0.75rem;letter-spacing:-0.02em;">
+      Singapore Property<br>
+      <span style="background:linear-gradient(90deg,#60a5fa,#a78bfa,#60a5fa);background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s ease-in-out infinite;">Financial Calculator</span>
+    </h1>
+  </div>
+
+  <div class="anim-reveal" style="animation-delay:0.2s;">
+    <p style="font-size:1rem;opacity:0.7;max-width:550px;margin:0 auto 0.75rem;line-height:1.6;letter-spacing:0.02em;">
+      by <strong style="opacity:1;color:#93c5fd;">Alson Mah</strong> ‚Äî Your Investment Consultant
+    </p>
+    <p style="font-size:0.95rem;opacity:0.6;max-width:550px;margin:0 auto 2rem;line-height:1.6;">
+      Calculate stamp duties, loan eligibility, and total costs with real-time precision.
+    </p>
+  </div>
+
+  <div class="anim-reveal hero-badges" style="animation-delay:0.3s;display:flex;gap:0.75rem;justify-content:center;flex-wrap:wrap;">
+    <div style="background:rgba(255,255,255,0.06);backdrop-filter:blur(10px);padding:0.6rem 1rem;border-radius:0.75rem;border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.5rem;">üìä <span style="font-size:0.8rem;letter-spacing:0.03em;">BSD & ABSD</span></div>
+    <div style="background:rgba(255,255,255,0.06);backdrop-filter:blur(10px);padding:0.6rem 1rem;border-radius:0.75rem;border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.5rem;">üè¶ <span style="font-size:0.8rem;letter-spacing:0.03em;">TDSR Check</span></div>
+    <div style="background:rgba(255,255,255,0.06);backdrop-filter:blur(10px);padding:0.6rem 1rem;border-radius:0.75rem;border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.5rem;">üí∞ <span style="font-size:0.8rem;letter-spacing:0.03em;">Cash Flow</span></div>
+    <div style="background:rgba(255,255,255,0.06);backdrop-filter:blur(10px);padding:0.6rem 1rem;border-radius:0.75rem;border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:0.5rem;">üõ°Ô∏è <span style="font-size:0.8rem;letter-spacing:0.03em;">Safety Net</span></div>
+  </div>
+</header>
+
+<!-- ===== TRUST BAR ===== -->
+<div style="background:white;border-bottom:1px solid #e2e8f0;padding:1.5rem;">
+  <div class="trust-bar-inner" style="max-width:72rem;margin:0 auto;display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:0.75rem;"><span style="font-size:1.5rem;">üèõÔ∏è</span><div><div style="font-weight:600;color:#1e293b;font-size:0.875rem;">MAS Compliant</div><div style="font-size:0.75rem;color:#64748b;">TDSR Guidelines</div></div></div>
+    <div style="display:flex;align-items:center;gap:0.75rem;"><span style="font-size:1.5rem;">üìã</span><div><div style="font-weight:600;color:#1e293b;font-size:0.875rem;">IRAS Rates</div><div style="font-size:0.75rem;color:#64748b;">Apr 2024</div></div></div>
+    <div style="display:flex;align-items:center;gap:0.75rem;"><span style="font-size:1.5rem;">üîí</span><div><div style="font-weight:600;color:#1e293b;font-size:0.875rem;">PDPA Protected</div><div style="font-size:0.75rem;color:#64748b;">Data Security</div></div></div>
+    <div style="display:flex;align-items:center;gap:0.75rem;"><span style="font-size:1.5rem;">‚úÖ</span><div><div style="font-weight:600;color:#1e293b;font-size:0.875rem;">CEA Referenced</div><div style="font-size:0.75rem;color:#64748b;">Industry Standard</div></div></div>
+  </div>
+</div>
+
+<!-- ===== PROGRESS STEPS ===== -->
+<div class="steps-bar" style="background:linear-gradient(to right,#eff6ff,#faf5ff);padding:2rem 1.5rem;">
+  <div style="max-width:48rem;margin:0 auto;">
+    <div style="display:flex;justify-content:space-between;position:relative;">
+      <div style="position:absolute;top:1.25rem;left:10%;right:10%;height:2px;background:#e2e8f0;">
+        <div id="stepProgress" style="height:100%;background:linear-gradient(90deg,#3b82f6,#8b5cf6);width:0%;transition:width 0.5s ease;"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;">
+        <div id="step1" class="step-dot active" style="width:2.5rem;height:2.5rem;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:white;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.1);transition:all 0.3s ease;">üè†</div>
+        <span style="margin-top:0.5rem;font-size:0.75rem;color:#3b82f6;font-weight:600;">Property Details</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;">
+        <div id="step2" class="step-dot" style="width:2.5rem;height:2.5rem;border-radius:50%;background:white;color:#94a3b8;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.1);transition:all 0.3s ease;">üíº</div>
+        <span id="step2Label" style="margin-top:0.5rem;font-size:0.75rem;color:#94a3b8;font-weight:600;">Financial Info</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;">
+        <div id="step3" class="step-dot" style="width:2.5rem;height:2.5rem;border-radius:50%;background:white;color:#94a3b8;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.25rem;border:3px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.1);transition:all 0.3s ease;">üìä</div>
+        <span id="step3Label" style="margin-top:0.5rem;font-size:0.75rem;color:#94a3b8;font-weight:600;">Get Results</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN CALCULATOR ===== -->
+<div class="container">
+  <div class="calc-grid">
+
+    <!-- ========== LEFT COLUMN ‚Äî INPUTS ========== -->
+    <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+      <!-- Property Details Card -->
+      <div class="card anim-reveal">
+        <div class="card-header">
+          <div class="card-icon" style="background:linear-gradient(135deg,#dbeafe,#ede9fe);">üè†</div>
+          <div><h2 style="font-weight:700;color:#1e293b;margin-bottom:0.125rem;">Property Details</h2><p style="font-size:0.75rem;color:#64748b;">Set your target property parameters</p></div>
+        </div>
+
+        <div style="margin-bottom:1.5rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+            <span class="tooltip-wrap"><label class="label" style="margin-bottom:0;">Property Price</label><span class="tooltip-icon">?</span><span class="tooltip-text">The purchase price of the property</span></span>
+            <span style="font-size:0.75rem;color:#64748b;">S$500,000 ‚Äì S$10,000,000</span>
+          </div>
+          <input type="range" id="propertyPrice" min="500000" max="10000000" step="50000" value="2000000">
+          <div id="priceDisplay" style="font-size:2.5rem;font-weight:800;color:#1e293b;margin-top:0.75rem;letter-spacing:-0.02em;">S$2,000,000</div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <span class="tooltip-wrap"><label class="label" style="margin-bottom:0.5rem;">LTV Ratio</label><span class="tooltip-icon">?</span><span class="tooltip-text">Loan-to-Value ratio determines your loan amount</span></span>
+            <select id="ltv" class="select-field">
+              <option value="0.75" selected>75% (Maximum)</option>
+              <option value="0.55">55%</option>
+              <option value="0.45">45%</option>
+            </select>
+          </div>
+          <div>
+            <label class="label">Buyer Age: <span id="age1Display">35</span></label>
+            <input type="range" id="age1" min="21" max="65" value="35" style="margin-top:0.5rem;">
+          </div>
+        </div>
+
+        <!-- Quick Insight -->
+        <div id="quickInsight" style="margin-top:1.5rem;padding:1rem;background:linear-gradient(135deg,#eff6ff,#faf5ff);border-radius:0.75rem;border:1px solid #dbeafe;">
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">üí° <span style="font-weight:600;color:#1e40af;font-size:0.875rem;">Quick Insight</span></div>
+          <p style="font-size:0.8rem;color:#3730a3;line-height:1.5;" id="insightText"></p>
+        </div>
+      </div>
+
+      <!-- Buyer Profile Card -->
+      <div class="card anim-reveal" style="animation-delay:0.1s;">
+        <div class="card-header">
+          <div class="card-icon" style="background:linear-gradient(135deg,#dcfce7,#d1fae5);">üë§</div>
+          <div><h2 style="font-weight:700;color:#1e293b;margin-bottom:0.125rem;" id="buyerTitle">Buyer Profile</h2><p style="font-size:0.75rem;color:#64748b;">Your residency status affects ABSD rates</p></div>
+        </div>
+        <div class="grid-2" style="margin-bottom:1rem;">
+          <div>
+            <label class="label">Nationality</label>
+            <select id="nationality1" class="select-field">
+              <option value="SC" selected>üá∏üá¨ Singapore Citizen</option>
+              <option value="SPR">üè† Permanent Resident</option>
+              <option value="Foreigner">üåè Foreigner</option>
+            </select>
+          </div>
+          <div>
+            <span class="tooltip-wrap"><label class="label" style="margin-bottom:0.5rem;">Properties Owned</label><span class="tooltip-icon">?</span><span class="tooltip-text">Number of properties currently owned</span></span>
+            <select id="propertiesOwned1" class="select-field">
+              <option value="0" selected>0 (First property)</option>
+              <option value="1">1 (Second property)</option>
+              <option value="2">2+ (Third or more)</option>
+            </select>
+          </div>
+        </div>
+        <!-- ABSD Rate Display -->
+        <div id="absdDisplay" style="padding:1rem;border-radius:0.75rem;transition:all 0.3s ease;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><div id="absdLabel" style="font-size:0.75rem;font-weight:600;">Your ABSD Rate</div><div id="absdDesc" style="font-size:0.8rem;margin-top:0.25rem;"></div></div>
+            <div id="absdRate" style="font-size:1.5rem;font-weight:800;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Joint Purchase Toggle -->
+      <div class="card anim-reveal" style="animation-delay:0.15s;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div class="card-icon" style="background:linear-gradient(135deg,#fef3c7,#fde68a);">üë•</div>
+            <div><h2 style="font-weight:700;color:#1e293b;margin-bottom:0.125rem;">Joint Purchase</h2><p style="font-size:0.75rem;color:#64748b;">Add a second buyer to combine income & funds</p></div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="hasSecondBuyer"><span class="toggle-track"></span></label>
+        </div>
+        <div id="buyer2Section" style="display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:2px dashed #e2e8f0;">
+          <h3 style="font-weight:600;color:#475569;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+            <span style="width:1.5rem;height:1.5rem;border-radius:50%;background:#8b5cf6;color:white;display:flex;align-items:center;justify-content:center;font-size:0.75rem;">2</span> Buyer 2 Profile
+          </h3>
+          <div class="grid-2" style="margin-bottom:1rem;">
+            <div><label class="label">Nationality</label><select id="nationality2" class="select-field"><option value="SC" selected>üá∏üá¨ Singapore Citizen</option><option value="SPR">üè† Permanent Resident</option><option value="Foreigner">üåè Foreigner</option></select></div>
+            <div><label class="label">Properties Owned</label><select id="propertiesOwned2" class="select-field"><option value="0" selected>0 (First property)</option><option value="1">1 (Second property)</option><option value="2">2+ (Third or more)</option></select></div>
+          </div>
+          <div><label class="label">Age: <span id="age2Display">35</span></label><input type="range" id="age2" min="21" max="65" value="35"></div>
+          <div style="margin-top:1rem;padding:0.75rem;background:#fef3c7;border-radius:0.5rem;font-size:0.75rem;color:#92400e;">‚ö†Ô∏è <strong>Note:</strong> For joint purchases, ABSD uses the <strong>higher rate</strong> between both buyers.</div>
+        </div>
+      </div>
+
+      <!-- Income Details (Collapsible) -->
+      <div class="card anim-reveal" style="animation-delay:0.2s;">
+        <div class="collapse-toggle" onclick="toggleIncome()">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div class="card-icon" style="background:linear-gradient(135deg,#e0e7ff,#c7d2fe);">üíº</div>
+            <div><h2 style="font-weight:700;color:#1e293b;margin-bottom:0.125rem;">Income Details</h2><p style="font-size:0.75rem;color:#64748b;" id="incomeSubtext">Your monthly earnings</p></div>
+          </div>
+          <div class="collapse-arrow open" id="incomeArrow">‚ñº</div>
+        </div>
+        <div id="incomePanel" style="margin-top:1.5rem;">
+          <div id="buyer1IncomeLabel" style="display:none;font-size:0.875rem;font-weight:600;color:#475569;margin-bottom:1rem;align-items:center;gap:0.5rem;">
+            <span style="width:1.25rem;height:1.25rem;border-radius:50%;background:#3b82f6;color:white;display:flex;align-items:center;justify-content:center;font-size:0.7rem;">1</span> Buyer 1 Income
+          </div>
+          <div style="display:flex;flex-direction:column;gap:1rem;">
+            <div><label class="label">Fixed Monthly Income</label><div class="prefix-wrap"><span class="prefix">S$</span><input type="number" id="monthlyIncome1" class="input-field" value="8000" placeholder="0"></div></div>
+            <div class="grid-2">
+              <div><span class="tooltip-wrap"><label class="label" style="margin-bottom:0.5rem;">Variable Income</label><span class="tooltip-icon">?</span><span class="tooltip-text">70% of variable income is counted for TDSR</span></span><input type="number" id="variableIncome1" class="input-field" value="0" placeholder="0"></div>
+              <div><span class="tooltip-wrap"><label class="label" style="margin-bottom:0.5rem;">Annual Bonus</label><span class="tooltip-icon">?</span><span class="tooltip-text">70% of monthly bonus (annual/12) is counted</span></span><input type="number" id="bonus1" class="input-field" value="0" placeholder="0"></div>
+            </div>
+            <div><span class="tooltip-wrap"><label class="label" style="margin-bottom:0.5rem;">Monthly Commitments</label><span class="tooltip-icon">?</span><span class="tooltip-text">Existing loan commitments (car, credit cards, etc.)</span></span><input type="number" id="commitments1" class="input-field" value="0" placeholder="0"></div>
+          </div>
+          <!-- Buyer 2 Income -->
+          <div id="buyer2IncomeSection" style="display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:2px dashed #e2e8f0;">
+            <h4 style="font-size:0.875rem;font-weight:600;color:#475569;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+              <span style="width:1.25rem;height:1.25rem;border-radius:50%;background:#8b5cf6;color:white;display:flex;align-items:center;justify-content:center;font-size:0.7rem;">2</span> Buyer 2 Income
+            </h4>
+            <div style="display:flex;flex-direction:column;gap:1rem;">
+              <div><label class="label">Fixed Monthly Income</label><div class="prefix-wrap"><span class="prefix">S$</span><input type="number" id="monthlyIncome2" class="input-field" value="0" placeholder="0"></div></div>
+              <div class="grid-2">
+                <div><label class="label">Variable Income</label><input type="number" id="variableIncome2" class="input-field" value="0" placeholder="0"></div>
+                <div><label class="label">Annual Bonus</label><input type="number" id="bonus2" class="input-field" value="0" placeholder="0"></div>
+              </div>
+              <div><label class="label">Monthly Commitments</label><input type="number" id="commitments2" class="input-field" value="0" placeholder="0"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cash & CPF (Collapsible) -->
+      <div class="card anim-reveal" style="animation-delay:0.25s;">
+        <div class="collapse-toggle" onclick="toggleCash()">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div class="card-icon" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);">üè¶</div>
+            <div><h2 style="font-weight:700;color:#1e293b;margin-bottom:0.125rem;">Cash & CPF</h2><p style="font-size:0.75rem;color:#64748b;" id="cashSubtext">Your available funds</p></div>
+          </div>
+          <div class="collapse-arrow open" id="cashArrow">‚ñº</div>
+        </div>
+        <div id="cashPanel" style="margin-top:1.5rem;">
+          <div id="buyer1FundsLabel" style="display:none;font-size:0.875rem;font-weight:600;color:#475569;margin-bottom:1rem;align-items:center;gap:0.5rem;">
+            <span style="width:1.25rem;height:1.25rem;border-radius:50%;background:#3b82f6;color:white;display:flex;align-items:center;justify-content:center;font-size:0.7rem;">1</span> Buyer 1 Funds
+          </div>
+          <div class="grid-2">
+            <div><label class="label">Available Cash</label><input type="number" id="cash1" class="input-field" value="300000" placeholder="0"></div>
+            <div><span class="tooltip-wrap"><label class="label" style="margin-bottom:0.5rem;">CPF OA Balance</label><span class="tooltip-icon">?</span><span class="tooltip-text">CPF Ordinary Account balance for property</span></span><input type="number" id="cpf1" class="input-field" value="200000" placeholder="0"></div>
+          </div>
+          <!-- Buyer 2 Funds -->
+          <div id="buyer2FundsSection" style="display:none;margin-top:1.5rem;padding-top:1.5rem;border-top:2px dashed #e2e8f0;">
+            <h4 style="font-size:0.875rem;font-weight:600;color:#475569;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;">
+              <span style="width:1.25rem;height:1.25rem;border-radius:50%;background:#8b5cf6;color:white;display:flex;align-items:center;justify-content:center;font-size:0.7rem;">2</span> Buyer 2 Funds
+            </h4>
+            <div class="grid-2">
+              <div><label class="label">Available Cash</label><input type="number" id="cash2" class="input-field" value="0" placeholder="0"></div>
+              <div><label class="label">CPF OA Balance</label><input type="number" id="cpf2" class="input-field" value="0" placeholder="0"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== RIGHT COLUMN ‚Äî RESULTS ========== -->
+    <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+      <!-- Hero Result Card -->
+      <div class="anim-scale" style="animation-delay:0.1s;">
+        <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 50%,#3730a3 100%);border-radius:1.5rem;padding:2rem;color:white;position:relative;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+          <div style="position:absolute;top:-50%;right:-20%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,0.3) 0%,transparent 70%);animation:pulse 4s ease-in-out infinite;"></div>
+          <div style="position:absolute;bottom:-30%;left:-10%;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,0.3) 0%,transparent 70%);animation:pulse 5s ease-in-out infinite;"></div>
+          <div style="position:relative;z-index:1;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;">
+              <div>
+                <div style="font-size:0.875rem;opacity:0.8;margin-bottom:0.25rem;text-transform:uppercase;letter-spacing:0.1em;">Total Upfront Cost</div>
+                <div id="totalCost" style="font-size:2.75rem;font-weight:800;letter-spacing:-0.02em;">S$0</div>
+              </div>
+              <div id="jointBadge" style="display:none;background:rgba(255,255,255,0.15);backdrop-filter:blur(10px);padding:0.5rem 0.75rem;border-radius:0.5rem;font-size:0.75rem;">üë• Joint Purchase</div>
+            </div>
+            <div class="grid-2" style="margin-bottom:1.5rem;">
+              <div style="background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);border-radius:1rem;padding:1rem;">
+                <div style="font-size:0.75rem;opacity:0.8;margin-bottom:0.25rem;">Monthly Mortgage</div>
+                <div id="monthlyMortgage" style="font-size:1.5rem;font-weight:700;">S$0</div>
+              </div>
+              <div style="background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);border-radius:1rem;padding:1rem;">
+                <div style="font-size:0.75rem;opacity:0.8;margin-bottom:0.25rem;">Loan Amount</div>
+                <div id="loanAmount" style="font-size:1.5rem;font-weight:700;">S$0</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:1rem;">
+              <div style="flex:1;background:rgba(255,255,255,0.1);border-radius:0.75rem;padding:0.75rem 1rem;">
+                <div style="font-size:0.7rem;opacity:0.7;">Tenure</div>
+                <div id="tenureDisplay" style="font-size:1.125rem;font-weight:600;">0 years</div>
+              </div>
+              <div id="safetyBox" style="flex:1;border-radius:0.75rem;padding:0.75rem 1rem;">
+                <div style="font-size:0.7rem;opacity:0.8;">Safety Net</div>
+                <div id="safetyDisplay" style="font-size:1.125rem;font-weight:600;">0 months</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Affordability Status -->
+      <div class="anim-reveal" style="animation-delay:0.15s;">
+        <div id="affordCard" style="border-radius:1.25rem;padding:1.5rem;display:flex;align-items:center;gap:1.25rem;transition:all 0.3s ease;">
+          <div id="affordIcon" style="width:4rem;height:4rem;border-radius:1rem;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;"></div>
+          <div><div id="affordTitle" style="font-size:1.25rem;font-weight:700;"></div><div id="affordDesc" style="font-size:0.875rem;margin-top:0.25rem;"></div></div>
+        </div>
+      </div>
+
+      <!-- Stamp Duty Breakdown -->
+      <div class="card anim-reveal" style="animation-delay:0.2s;">
+        <div class="card-header">
+          <div class="card-icon" style="background:linear-gradient(135deg,#fef3c7,#fde68a);">üìã</div>
+          <div><h2 style="font-weight:700;color:#1e293b;margin-bottom:0.125rem;">Stamp Duty Breakdown</h2><p style="font-size:0.75rem;color:#64748b;">BSD + ABSD calculations</p></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:#f8fafc;border-radius:0.75rem;">
+            <div><div style="font-weight:600;color:#1e293b;">Buyer's Stamp Duty (BSD)</div><div style="font-size:0.75rem;color:#64748b;margin-top:0.25rem;">Progressive rates up to 6%</div></div>
+            <div id="bsdAmount" style="font-size:1.25rem;font-weight:700;color:#1e293b;"></div>
+          </div>
+          <div id="absdRow" style="display:flex;justify-content:space-between;align-items:center;padding:1rem;border-radius:0.75rem;transition:all 0.3s ease;">
+            <div><div id="absdRowLabel" style="font-weight:600;display:flex;align-items:center;gap:0.5rem;">Additional BSD (ABSD)</div><div style="font-size:0.75rem;color:#64748b;margin-top:0.25rem;">Based on buyer profile</div></div>
+            <div id="absdAmount" style="font-size:1.25rem;font-weight:700;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:1rem;background:linear-gradient(135deg,#1e293b,#334155);border-radius:0.75rem;color:white;">
+            <div style="font-weight:700;">Total Stamp Duty</div>
+            <div id="totalStamp" style="font-size:1.5rem;font-weight:800;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Funds Required -->
+      <div class="card anim-reveal" style="animation-delay:0.25s;">
+        <div class="card-header">
+          <div class="card-icon" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);">üí∞</div>
+          <div><h2 style="font-weight:700;color:#1e293b;margin-bottom:0.125rem;">Funds Required</h2><p style="font-size:0.75rem;color:#64748b;">Cash and CPF breakdown</p></div>
+        </div>
+        <div id="fundsBreakdown" style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.5rem;"></div>
+        <div style="padding:1.25rem;background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:1rem;margin-bottom:1rem;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:0.75rem;">
+            <span style="font-weight:600;color:#1e40af;">Cash Required</span>
+            <span id="cashRequired" style="font-weight:700;color:#1e40af;font-size:1.125rem;"></span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="font-weight:600;color:#1e40af;">CPF Usable</span>
+            <span id="cpfUsable" style="font-weight:700;color:#1e40af;font-size:1.125rem;"></span>
+          </div>
+        </div>
+        <div id="fundsNote" style="font-size:0.8rem;color:#64748b;padding:0.75rem;background:#f8fafc;border-radius:0.5rem;"></div>
+      </div>
+
+      <!-- Loan Eligibility -->
+      <div class="card anim-reveal" style="animation-delay:0.3s;">
+        <div class="card-header">
+          <div class="card-icon" style="background:linear-gradient(135deg,#e0e7ff,#c7d2fe);">üìä</div>
+          <div><h2 style="font-weight:700;color:#1e293b;margin-bottom:0.125rem;">Loan Eligibility</h2><p style="font-size:0.75rem;color:#64748b;">Based on TDSR framework</p></div>
+        </div>
+        <div style="text-align:center;padding:1.5rem;background:linear-gradient(135deg,#f8fafc,#f1f5f9);border-radius:1rem;margin-bottom:1rem;">
+          <div style="font-size:0.875rem;color:#64748b;margin-bottom:0.5rem;">Maximum Loan Eligible</div>
+          <div id="maxLoanDisplay" style="font-size:2.5rem;font-weight:800;color:#1e293b;letter-spacing:-0.02em;"></div>
+          <div style="font-size:0.75rem;color:#64748b;margin-top:0.5rem;">55% TDSR limit @ 4% stress test</div>
+        </div>
+        <div style="padding:1rem;background:#eff6ff;border-radius:0.75rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><div id="incomeLabel2" style="font-size:0.75rem;color:#64748b;">Assessable Income</div><div id="incomeDisplay" style="font-size:1.25rem;font-weight:700;color:#1e40af;"></div></div>
+            <div style="text-align:right;"><div style="font-size:0.75rem;color:#64748b;">Max Monthly Payment</div><div id="maxPaymentDisplay" style="font-size:1rem;font-weight:600;color:#1e40af;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Button -->
+      <div class="anim-reveal" style="animation-delay:0.35s;">
+        <div id="ctaArea">
+          <button class="cta-btn" onclick="openModal()">üìÑ Get Your Personalised PDF Report <span style="font-size:1.25rem;">‚Üí</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== EDUCATIONAL CONTENT ===== -->
+<div style="background:linear-gradient(to bottom,#f8fafc,white);padding:4rem 1.5rem;">
+  <div style="max-width:72rem;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:3rem;">
+      <h2 style="font-size:2rem;font-weight:800;color:#1e293b;margin-bottom:0.75rem;">Property Buying Tips & Advice</h2>
+      <p style="color:#64748b;max-width:600px;margin:0 auto;">Essential knowledge every Singapore property buyer should know</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;">
+      <div class="card"><div style="font-size:2rem;margin-bottom:0.75rem;">üè†</div><h4 style="font-weight:700;margin-bottom:0.5rem;color:#1e293b;">First-Time Buyer Tips</h4><p style="font-size:0.875rem;color:#64748b;line-height:1.6;">Singapore Citizens buying their first property enjoy 0% ABSD. Consider this advantage carefully when timing your purchase. BTO flats offer significant savings compared to resale.</p></div>
+      <div class="card"><div style="font-size:2rem;margin-bottom:0.75rem;">üí∞</div><h4 style="font-weight:700;margin-bottom:0.5rem;color:#1e293b;">Cash vs CPF Strategy</h4><p style="font-size:0.875rem;color:#64748b;line-height:1.6;">BSD must be paid in cash. Plan your liquid funds carefully. Using too much CPF early may limit your retirement savings. Aim for a 6‚Äì12 month safety net.</p></div>
+      <div class="card"><div style="font-size:2rem;margin-bottom:0.75rem;">üìä</div><h4 style="font-weight:700;margin-bottom:0.5rem;color:#1e293b;">Understanding TDSR</h4><p style="font-size:0.875rem;color:#64748b;line-height:1.6;">Banks use a 4% stress test rate even if actual rates are lower. Keep total debt obligations under 55% of income. Factor in all existing loans.</p></div>
+      <div class="card"><div style="font-size:2rem;margin-bottom:0.75rem;">üè¶</div><h4 style="font-weight:700;margin-bottom:0.5rem;color:#1e293b;">Loan Tenure Matters</h4><p style="font-size:0.875rem;color:#64748b;line-height:1.6;">Longer tenure = lower monthly payments but more total interest. For 75% LTV, max tenure is tied to age 65. Consider your retirement plans.</p></div>
+      <div class="card"><div style="font-size:2rem;margin-bottom:0.75rem;">üìã</div><h4 style="font-weight:700;margin-bottom:0.5rem;color:#1e293b;">Hidden Costs to Budget</h4><p style="font-size:0.875rem;color:#64748b;line-height:1.6;">Beyond stamp duties: legal fees (~S$3,000), valuation (~S$500), fire insurance, maintenance fees, and renovation costs. Budget an extra 5‚Äì10%.</p></div>
+      <div class="card"><div style="font-size:2rem;margin-bottom:0.75rem;">üõ°Ô∏è</div><h4 style="font-weight:700;margin-bottom:0.5rem;color:#1e293b;">Safety Net Importance</h4><p style="font-size:0.875rem;color:#64748b;line-height:1.6;">Experts recommend 6‚Äì12 months of mortgage payments in reserve. This protects against job loss, medical emergencies, or market downturns.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ABSD REFERENCE TABLE ===== -->
+<div style="background:white;padding:4rem 1.5rem;">
+  <div style="max-width:72rem;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:3rem;">
+      <h2 style="font-size:2rem;font-weight:800;color:#1e293b;margin-bottom:0.5rem;">ABSD Rate Reference</h2>
+      <p style="color:#64748b;">Current rates effective from 27 April 2023</p>
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;min-width:600px;">
+        <thead><tr style="background:linear-gradient(135deg,#1e293b,#334155);">
+          <th style="padding:1rem 1.5rem;text-align:left;color:white;font-weight:600;border-radius:0.75rem 0 0 0;">Buyer Profile</th>
+          <th style="padding:1rem 1.5rem;text-align:center;color:white;font-weight:600;">1st Property</th>
+          <th style="padding:1rem 1.5rem;text-align:center;color:white;font-weight:600;">2nd Property</th>
+          <th style="padding:1rem 1.5rem;text-align:center;color:white;font-weight:600;border-radius:0 0.75rem 0 0;">3rd+ Property</th>
+        </tr></thead>
+        <tbody>
+          <tr style="background:#f8fafc;"><td style="padding:1rem 1.5rem;font-weight:600;">üá∏üá¨ Singapore Citizen</td><td style="padding:1rem 1.5rem;text-align:center;"><span style="background:#ecfdf5;color:#065f46;padding:0.375rem 0.75rem;border-radius:0.5rem;font-weight:600;">0%</span></td><td style="padding:1rem 1.5rem;text-align:center;"><span style="background:#fef2f2;color:#991b1b;padding:0.375rem 0.75rem;border-radius:0.5rem;font-weight:600;">20%</span></td><td style="padding:1rem 1.5rem;text-align:center;"><span style="background:#fef2f2;color:#991b1b;padding:0.375rem 0.75rem;border-radius:0.5rem;font-weight:600;">30%</span></td></tr>
+          <tr style="background:white;"><td style="padding:1rem 1.5rem;font-weight:600;">üè† Permanent Resident</td><td style="padding:1rem 1.5rem;text-align:center;"><span style="background:#fef3c7;color:#92400e;padding:0.375rem 0.75rem;border-radius:0.5rem;font-weight:600;">5%</span></td><td style="padding:1rem 1.5rem;text-align:center;"><span style="background:#fef2f2;color:#991b1b;padding:0.375rem 0.75rem;border-radius:0.5rem;font-weight:600;">30%</span></td><td style="padding:1rem 1.5rem;text-align:center;"><span style="background:#fef2f2;color:#991b1b;padding:0.375rem 0.75rem;border-radius:0.5rem;font-weight:600;">35%</span></td></tr>
+          <tr style="background:#f8fafc;"><td style="padding:1rem 1.5rem;font-weight:600;">üåè Foreigner</td><td style="padding:1rem 1.5rem;text-align:center;"><span style="background:#fef2f2;color:#991b1b;padding:0.375rem 0.75rem;border-radius:0.5rem;font-weight:600;">60%</span></td><td style="padding:1rem 1.5rem;text-align:center;"><span style="background:#fef2f2;color:#991b1b;padding:0.375rem 0.75rem;border-radius:0.5rem;font-weight:600;">60%</span></td><td style="padding:1rem 1.5rem;text-align:center;"><span style="background:#fef2f2;color:#991b1b;padding:0.375rem 0.75rem;border-radius:0.5rem;font-weight:600;">60%</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DISCLAIMERS ===== -->
+<div style="background:#f1f5f9;padding:3rem 1.5rem;">
+  <div style="max-width:72rem;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;">
+      <div style="background:#fef3c7;border-radius:1rem;padding:1.5rem;border:1px solid #fde68a;">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;"><span style="font-size:1.5rem;">‚ö†Ô∏è</span><h3 style="font-weight:700;color:#92400e;">Important Disclaimer</h3></div>
+        <p style="font-size:0.8rem;color:#78350f;line-height:1.7;">This calculator is provided for <strong>general informational and educational purposes only</strong>. The calculations and estimates do not constitute financial, legal, tax, or investment advice. We do not guarantee accuracy or completeness. Always consult qualified professionals before making property decisions.</p>
+      </div>
+      <div style="background:#dbeafe;border-radius:1rem;padding:1.5rem;border:1px solid #bfdbfe;">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;"><span style="font-size:1.5rem;">üèõÔ∏è</span><h3 style="font-weight:700;color:#1e40af;">Regulatory Compliance</h3></div>
+        <p style="font-size:0.8rem;color:#1e3a8a;line-height:1.7;">Stamp duty rates are based on <strong>IRAS guidelines (Apr 2024)</strong>. TDSR calculations follow <strong>MAS Notice 645</strong>. For property transactions, engage a licensed agent registered with the <strong>Council for Estate Agencies (CEA)</strong>.</p>
+      </div>
+      <div style="background:#f3e8ff;border-radius:1rem;padding:1.5rem;border:1px solid #e9d5ff;">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;"><span style="font-size:1.5rem;">üîí</span><h3 style="font-weight:700;color:#6b21a8;">Data Protection (PDPA)</h3></div>
+        <p style="font-size:0.8rem;color:#581c87;line-height:1.7;">Your personal data is protected under Singapore's <strong>Personal Data Protection Act (PDPA)</strong>. We collect, use, and disclose your information only with your consent and for the stated purposes.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer style="background:linear-gradient(160deg,#000,#0a0a0a,#111827);color:white;padding:3rem 1.5rem;">
+  <div style="max-width:72rem;margin:0 auto;text-align:center;">
+    <div style="margin-bottom:1.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;">
+      <img id="logoFooter" alt="Alson Mah" style="width:64px;height:64px;border-radius:0.75rem;object-fit:cover;border:1px solid rgba(255,255,255,0.1);filter:drop-shadow(0 2px 10px rgba(59,130,246,0.2));">
+      <div><span style="font-size:1.25rem;font-weight:800;letter-spacing:0.05em;color:white;">ALSON MAH.</span><div style="font-size:0.7rem;letter-spacing:0.15em;opacity:0.5;margin-top:0.25rem;text-transform:uppercase;">Your Investment Consultant</div></div>
+    </div>
+    <p style="font-size:0.8rem;opacity:0.5;line-height:1.8;max-width:600px;margin:0 auto;">
+      ¬© <span id="footerYear"></span> Alson Mah ‚Äî Your Investment Consultant. All rights reserved.<br>
+      This tool is for informational purposes only and does not constitute professional advice.<br>
+      Always consult licensed professionals for property, financial, and legal matters.
+    </p>
+    <div style="margin-top:1.5rem;display:flex;justify-content:center;gap:2rem;font-size:0.7rem;opacity:0.35;letter-spacing:0.05em;flex-wrap:wrap;">
+      <span>IRAS Compliant</span><span style="opacity:0.5;">‚Ä¢</span><span>MAS Guidelines</span><span style="opacity:0.5;">‚Ä¢</span><span>PDPA Protected</span><span style="opacity:0.5;">‚Ä¢</span><span>CEA Referenced</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== LEAD CAPTURE MODAL ===== -->
+<div class="modal-overlay" id="modal" onclick="closeModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">√ó</button>
+    <div style="text-align:center;margin-bottom:1.5rem;">
+      <div style="width:5rem;height:5rem;border-radius:1rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;box-shadow:0 10px 30px rgba(0,0,0,0.3);overflow:hidden;">
+        <img id="logoModal" alt="Alson Mah" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+      <h3 style="font-size:1.5rem;font-weight:800;color:#1e293b;margin-bottom:0.5rem;">Get Your Personalised Report</h3>
+      <p style="color:#64748b;font-size:0.9rem;">Prepared by <strong style="color:#1e293b;">Alson Mah</strong> ‚Äî Your Investment Consultant</p>
+    </div>
+    <form id="leadForm" onsubmit="handleSubmit(event)" style="display:flex;flex-direction:column;gap:1rem;">
+      <div><label style="font-size:0.875rem;font-weight:600;color:#475569;display:block;margin-bottom:0.5rem;">Full Name <span style="color:#dc2626;">*</span></label><input type="text" id="formName" class="input-field" placeholder="Your full name"><span class="error-msg" id="errName"></span></div>
+      <div><label style="font-size:0.875rem;font-weight:600;color:#475569;display:block;margin-bottom:0.5rem;">Email Address <span style="color:#dc2626;">*</span></label><input type="email" id="formEmail" class="input-field" placeholder="your.email@example.com"><span class="error-msg" id="errEmail"></span></div>
+      <div><label style="font-size:0.875rem;font-weight:600;color:#475569;display:block;margin-bottom:0.5rem;">Mobile Number <span style="color:#dc2626;">*</span></label><input type="tel" id="formPhone" class="input-field" placeholder="+65 9XXX XXXX"><span class="error-msg" id="errPhone"></span></div>
+      <div style="padding:1rem;background:linear-gradient(135deg,#eff6ff,#faf5ff);border-radius:0.75rem;">
+        <div style="font-weight:600;color:#1e40af;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.5rem;">üéÅ Your report includes:</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;font-size:0.875rem;color:#3730a3;">
+          <div>‚úì Stamp duty breakdown</div><div>‚úì Cash flow analysis</div><div>‚úì Financing options</div><div>‚úì Safety net review</div>
+        </div>
+      </div>
+      <div id="consentBox" style="padding:1rem;background:#f8fafc;border-radius:0.75rem;border:1px solid #e2e8f0;">
+        <label style="display:flex;gap:0.75rem;cursor:pointer;align-items:flex-start;">
+          <input type="checkbox" id="consentCheck" style="width:1.25rem;height:1.25rem;margin-top:0.125rem;accent-color:#3b82f6;flex-shrink:0;">
+          <span style="font-size:0.75rem;color:#475569;line-height:1.6;">
+            I consent to the collection, use, and disclosure of my personal data in accordance with the <strong>Personal Data Protection Act (PDPA)</strong> of Singapore. I understand my information will be used to send me the requested report and for follow-up communications regarding property-related services. I may withdraw consent at any time.
+          </span>
+        </label>
+        <span class="error-msg" id="errConsent"></span>
+      </div>
+      <button type="submit" style="width:100%;padding:1rem;background:linear-gradient(135deg,#f59e0b,#eab308);color:#1e293b;font-weight:700;border-radius:0.75rem;border:none;cursor:pointer;font-size:1rem;box-shadow:0 4px 15px rgba(245,158,11,0.3);transition:all 0.2s;font-family:inherit;">Send My Free Report ‚Üí</button>
+      <p style="font-size:0.75rem;color:#94a3b8;text-align:center;">üîí Your data is protected under Singapore's PDPA. Alson Mah never shares your information with unauthorised parties.</p>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ===================================================================
+   SINGAPORE PROPERTY FINANCIAL CALCULATOR ‚Äî VANILLA JS ENGINE
+   Faithfully ported from the React JSX source.
+   =================================================================== */
+
+// ‚îÄ‚îÄ Brand Logo Data URIs ‚îÄ‚îÄ
+const LOGO_HERO = 'data:image/webp;base64,UklGRhgGAABXRUJQVlA4IAwGAAAwHwCdASqMAIwAPnk8mEmkoyIhInK7MJAPCWlEdwONf6bf2bs3/xHRK+TPZj1Pa0+///AeKHeDwAvXe6Ecg/qndo/vPoB9Mv8/6lP5//v/Sn9APEGoAfzj+1/8z7o/pR/hP+9/i/OP+df3X/s/4j4Bv51/W/+H/duz9+3Psifq4TUDY4UA5iYeF0UUAm3K+utobTZ2tpQ38XZXvI6iY/4QZLHU/jMywIn5qp8mMDjve/8qS/gMUAE7GNbHpnZt/HD5qzzevkaExlILp86vg5MnB54oH/lQlVZ8HyH2yilEIPP2Qku9Vfl7Xl38WtNxPqdazwioq+aA4aPzG7kjoAZPsAAA/vxc0CZ+1pCPO0bc78buKoXRqAm7G441/2xoTwdM7OdkpZXc1NRt45HsfDBtgiWSXvc7xGd2M8Dc+L5XG/iSqVZooV8X1cX3gHbS/QNB8f7nFGa7vNPKxlG81ftRnrlM/P/1ssxPbVlujSHRJqd6Nb3gv/4XV0WjTadG6dmVTtU018SRa1YxZ63/9pdej0tAVvQE+KYOPT/ct5DS7MpXaPjxkQuc2Ovrz6DaI8hYaIUiHYaon3TptQZd1ghx26b7HOtyXL9kFu5Yqhd6sSdr5DFlC1QOK3VlzZgh+3/A8W7P/ATD7tUlRFS1Qly9t4V9O/zgu4C5FLul1ZBkblEuqiNLcLL/YJ/n7If5W2+QJFvQxzHFZpmXvkhRtruHwP1al0Y983vp2dv72XWa0U/ECa0AzQBtAaODwjue1vyVI9oPm7Xr8bb7UPtvULOmuGyEycid49M3PtbfMhntuFaK5xqUKijgrnqwPuKQJ8eyWz5RAxsSxGETfBgT37KsCJKlXYT/M7ASKRNH8n50/5c9kiN6yFZIJA2ZwepbWasCEfQEs5xxrQ3W1r4F0l5FHw3rrf34N4+U5dQSmv5vxOVBtm8TLZsymqKhIFtdjAg14kdf2Uw2mMwkU+jiyV1BAK0y8BEC/u/7n1y7D8QGu68Gr+wOPkc8O68fJF0Nz5ok8jlSPPFzalfw+uiogI6Kkxd/BjZArUEehgMFX+tNZDEq66114uAflwBGHiq/eeGOyfbxjbjuFVB2aMBhYD6vlALo7ZwfeIvcHNE31ju5aO6ETMM8orcz/tz2bCcZq72HBn4foHRCvx7ztjX0krft1JqsU5ygbGs6Vx1/yPVwTHZeaMBUj2nSccicAo3tqeiQcL4lFmubswrEC1RW6sR9UTWrgv6/TpXjMmcT2YI/NIxMsWceNmdKzBzvVE4/HsP0phJLSLilW+u20IAK5Lh6VfF/2Mll4LU8nbpMJSG1bSP//SdqTc5BeV+DTG9pVxpZqyOe2X5LzAsyVTJhX6jLj68GQRQ1j6+F9YPOdDbhaXlo/nFYkSIUTqH0ZdAEyGi3NUqSeX7DRPh3iPErb5xBr8P9OGM2rnRW8xAnIkkaW/jRFqKq4LVJkIfJW9NHSiSrw8qxTjiub302AwHYshWCfB3Z5tNLjQ2/FZ5SZBLFhtv993wI77Xlt2YrRoMinMTqkKnPr+ffA4ZlUiX1nE3GVw9aP72qwiAY8slGbFnwzGe6VG19W7pS5F9JGsFDnLTfT1ivjwPBrwM4mndgUhl6kx+dhKpRTkXPLk2SODlb5l3Lrq59hWYc1TCjQroLRKHjP61+tnwfyIxR2AgMHZLqDn6Av/XBrfG2e3OUL6RVNcS1xNTzOGOPfRqd8HBTJ7J+n/D7/b+9vb+E6unxUWsjxOp5IBiY4ycPBabEy1UOCaGcRufqmeN3t7/2WBEMw10oKmrIdLT4OVq+qYGtdvT39FjQXTaeqaeDoAF2i5Aav8XIVXsx9JXIIr6njsoDH1HtWDVNXMteBPynU3zjj7Tx+bZAb5IEFVOMkROMnhy0RN3thyuemsW3+bZNp//4pXEkqDmk12dfkeWqXmuWpHJ3bTqdztVkf+CufVAjVQA/s6HiT2NG8tNGCg1lweigyXxWJ6Yupr2Y2Js+lyBFDmO/A53ak+m3UxIbMxcKt1B7wXyOzpKef0+KC/8H7Mu6P8vqgy6z09yYAAAAAAA=';
+const LOGO_SM = 'data:image/webp;base64,UklGRr4CAABXRUJQVlA4ILICAACwDwCdASpQAFAAPpE+mkqloyIhpTQNULASCWkAFtPsy/yuN/7eRAjgVwFHx5AnfPm3/439L9d/6H8/X0d7Bf6wdXH9t/RmPe/bBiWNXRokyUj+Pe3BvsA7M7heWOPS/m1WtirgOA7fLI5l7IkTHpj8xKEBjzYo8ASKkOFWI4YmhRzbgDFMAAD++/3g41Na5ejjNV2jIbEbycpWycE82Jc38FVyoidoomv/Vzw/mZ7DS7f+k7UDJGu305wvRNbabJRkPFk9Pq+hedP7aNKrZJ4+cagIBynLJ8UeP7XuxOeS7Z/okmkM69OVWXFpEBj3nLzeo6Wul9TeFQykuf1OYlDDeGKSnfC8fyVJbIO0QniUH68UtaEnCMDTX1sjGKSgucOH/TvQZvD8/8oVkE/2Bb/RIMLJ4T3tq+Z5WKz2MlQLJttDkzk9U5GmhBp7/BQaxiYGb+4eJVv2/0ENX78xWEyOiopmv2HLrqU4kv8TqOsxaEs4C43LETQuZ0Hjh5TpPDfKStSWbNzWa0yrqlIxNeuhrNpFXI6cW22mb6R/HW5me1YpIB2z1RDXZESskbMON9V5f0IY58V2pH/iWEt6MnwMNj8Vht2nIS2qGW0P+vSSwSk2m6Srm3AQy4JZABKgLgQ0b0b3YqCGwND6v40Hu0XQbLlaJRdTVd//qtX1f6jcVdMp1VW4dtdbebI964Msb5IqUfJZnerLsXMujX/pNuyI1iisGNGpo9fnkcqaZ1FP+HYTMMClsVUbJpmnjTSwwapBA5yEi2wo2BZ0EOAUc6xKwAFNpkt/Esf6AA9kCHA7jG6IaeUsBbMoL6rb7z7P+V1eZaVG1kaOzPWwsmJdLY3PoB7yn58Ufrs0N5JL5/HxzqIyYVYzMNNO7NTIf4jKDgTv8EXTknvZVUN5nB42oAAAAAA=';
+
+// Set logo images
+document.getElementById('logoHero').src = LOGO_HERO;
+document.getElementById('logoSm').src = LOGO_SM;
+document.getElementById('logoFooter').src = LOGO_SM;
+document.getElementById('logoModal').src = LOGO_HERO;
+document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+// ‚îÄ‚îÄ Floating Particles ‚îÄ‚îÄ
+(function() {
+  const c = document.getElementById('particles');
+  for (let i = 0; i < 6; i++) {
+    const d = document.createElement('div');
+    const sz = 100 + i * 50;
+    Object.assign(d.style, {
+      position: 'absolute', width: sz+'px', height: sz+'px', borderRadius: '50%',
+      background: `radial-gradient(circle, ${i%2 ? 'rgba(59,130,246,0.08)' : 'rgba(139,92,246,0.08)'} 0%, transparent 70%)`,
+      left: (10+i*15)+'%', top: (20+(i%3)*25)+'%',
+      animation: `float ${8+i*2}s ease-in-out infinite`, animationDelay: (i*0.5)+'s',
+    });
+    c.appendChild(d);
+  }
+})();
+
+// ‚îÄ‚îÄ Scroll Progress ‚îÄ‚îÄ
+window.addEventListener('scroll', () => {
+  const t = document.documentElement.scrollHeight - window.innerHeight;
+  const p = t > 0 ? (window.scrollY / t) * 100 : 0;
+  document.getElementById('progressBar').style.width = p + '%';
+  const bar = document.getElementById('topBar');
+  const inner = document.getElementById('topBarInner');
+  if (p > 2) {
+    bar.style.background = 'rgba(0,0,0,0.92)';
+    bar.style.backdropFilter = 'blur(12px)';
+    bar.style.borderBottom = '1px solid rgba(255,255,255,0.06)';
+    inner.style.opacity = '1';
+  } else {
+    bar.style.background = 'transparent';
+    bar.style.backdropFilter = 'none';
+    bar.style.borderBottom = 'none';
+    inner.style.opacity = '0';
+  }
+});
+
+// ‚îÄ‚îÄ State ‚îÄ‚îÄ
+let showIncome = true, showCash = true, submitted = false;
+
+// ‚îÄ‚îÄ Collapsible Panels ‚îÄ‚îÄ
+function toggleIncome() {
+  showIncome = !showIncome;
+  document.getElementById('incomePanel').style.display = showIncome ? '' : 'none';
+  document.getElementById('incomeArrow').classList.toggle('open', showIncome);
+}
+function toggleCash() {
+  showCash = !showCash;
+  document.getElementById('cashPanel').style.display = showCash ? '' : 'none';
+  document.getElementById('cashArrow').classList.toggle('open', showCash);
+}
+
+// ‚îÄ‚îÄ Get Input Values ‚îÄ‚îÄ
+function getVal(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function getStr(id) { return document.getElementById(id).value; }
+
+// ‚îÄ‚îÄ Singapore Property Calculations (exact port from JSX) ‚îÄ‚îÄ
+function calcBSD(p) {
+  if (p <= 0) return 0;
+  if (p < 1e6) return p * 0.03 - 5400;
+  if (p < 1.5e6) return p * 0.04 - 15400;
+  if (p < 3e6) return p * 0.05 - 30400;
+  return p * 0.06 - 60400;
+}
+
+function getABSDRate(nationality, propertyCount) {
+  const rates = { SC: [0, 0.20, 0.30], SPR: [0.05, 0.30, 0.35], Foreigner: [0.60, 0.60, 0.60] };
+  return rates[nationality][Math.min(propertyCount, 2)];
+}
+
+function calcABSD(p, n1, c1, n2, c2, hasSecond) {
+  return p * (hasSecond ? Math.max(getABSDRate(n1, c1), getABSDRate(n2, c2)) : getABSDRate(n1, c1));
+}
+
+function calcPMT(P, r, n) {
+  if (P <= 0 || n <= 0) return 0;
+  return P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+}
+
+function calcMaxLoan(inc, com, t) {
+  const m = inc * 0.55 - com;
+  if (m <= 0) return 0;
+  const r = 0.04 / 12;
+  return m * (Math.pow(r + 1, t * 12) - 1) / (r * Math.pow(r + 1, t * 12));
+}
+
+function fmt(n) { return 'S$' + Math.round(n).toLocaleString(); }
+
+// ‚îÄ‚îÄ Main Calculation & UI Update ‚îÄ‚îÄ
+function recalc() {
+  const p = getVal('propertyPrice');
+  const ltv = getVal('ltv');
+  const n1 = getStr('nationality1');
+  const o1 = getVal('propertiesOwned1');
+  const a1 = getVal('age1');
+  const i1 = getVal('monthlyIncome1');
+  const v1 = getVal('variableIncome1');
+  const b1 = getVal('bonus1');
+  const cm1 = getVal('commitments1');
+  const cash1 = getVal('cash1');
+  const cpf1 = getVal('cpf1');
+  const hasSecond = document.getElementById('hasSecondBuyer').checked;
+  const n2 = getStr('nationality2');
+  const o2 = getVal('propertiesOwned2');
+  const a2 = getVal('age2');
+  const i2 = getVal('monthlyIncome2');
+  const v2 = getVal('variableIncome2');
+  const b2 = getVal('bonus2');
+  const cm2 = getVal('commitments2');
+  const cash2 = getVal('cash2');
+  const cpf2 = getVal('cpf2');
+
+  // Income
+  const income1 = i1 + v1 * 0.7 + b1 / 12 * 0.7;
+  const income2 = hasSecond ? (i2 + v2 * 0.7 + b2 / 12 * 0.7) : 0;
+  const totalIncome = income1 + income2;
+  const totalCommitments = cm1 + (hasSecond ? cm2 : 0);
+  const totalCash = cash1 + (hasSecond ? cash2 : 0);
+  const totalCPF = cpf1 + (hasSecond ? cpf2 : 0);
+
+  // Tenure
+  const relevantAge = hasSecond ? (ltv >= 0.75 ? Math.max(a1, a2) : Math.min(a1, a2)) : a1;
+  const tenure = Math.max(5, ltv >= 0.75 ? Math.min(65 - relevantAge, 30) : Math.min(75 - relevantAge, 35));
+
+  // Stamp duties
+  const _bsd = calcBSD(p);
+  const absdRate = hasSecond ? Math.max(getABSDRate(n1, o1), getABSDRate(n2, o2)) : getABSDRate(n1, o1);
+  const _absd = calcABSD(p, n1, o1, n2, o2, hasSecond);
+  const stamp = _bsd + _absd;
+
+  // Loan
+  const _maxLoan = calcMaxLoan(totalIncome, totalCommitments, tenure);
+  const loan = Math.min(_maxLoan, p * ltv);
+
+  // Funds
+  const minCashPct = ltv >= 0.75 ? 0.05 : ltv >= 0.55 ? 0.10 : 0.25;
+  const dp = p - loan;
+  const cpfUse = Math.min(totalCPF, Math.max(0, dp - p * minCashPct));
+  const legal = 3000;
+  const total = dp + stamp + legal;
+  const cashNeed = Math.max(p * minCashPct, dp - cpfUse) + _bsd + legal;
+  const cpfNeed = Math.max(0, total - cashNeed);
+  const monthly = calcPMT(loan, 0.04 / 12, tenure * 12);
+  const shortfall = Math.max(0, cashNeed - totalCash);
+  const cpfShortfall = Math.max(0, cpfNeed - totalCPF);
+  const surplus = Math.max(0, totalCash - cashNeed) + Math.max(0, totalCPF - cpfNeed);
+  const safety = monthly > 0 ? Math.floor(surplus / monthly) : 0;
+  const ok = shortfall === 0 && cpfShortfall === 0;
+
+  // ‚îÄ‚îÄ UPDATE UI ‚îÄ‚îÄ
+
+  // Price display
+  document.getElementById('priceDisplay').textContent = fmt(p);
+  document.getElementById('age1Display').textContent = a1;
+  document.getElementById('age2Display').textContent = a2;
+
+  // Range slider backgrounds
+  document.getElementById('propertyPrice').style.background = `linear-gradient(to right, #3b82f6 ${(p - 500000) / 95000}%, #e2e8f0 0%)`;
+  document.getElementById('age1').style.background = `linear-gradient(to right, #8b5cf6 ${(a1 - 21) / 44 * 100}%, #e2e8f0 0%)`;
+  document.getElementById('age2').style.background = `linear-gradient(to right, #8b5cf6 ${(a2 - 21) / 44 * 100}%, #e2e8f0 0%)`;
+
+  // Quick insight
+  const minCashDP = p * (ltv >= 0.75 ? 0.05 : 0.10);
+  document.getElementById('insightText').innerHTML = `At ${Math.round(ltv * 100)}% LTV, your minimum cash downpayment is <strong>${fmt(minCashDP)}</strong> (${ltv >= 0.75 ? '5%' : '10%'} of property price).`;
+
+  // Buyer title
+  document.getElementById('buyerTitle').textContent = hasSecond ? 'Buyer 1 Profile' : 'Buyer Profile';
+
+  // ABSD display
+  const absdEl = document.getElementById('absdDisplay');
+  if (absdRate > 0) {
+    absdEl.style.background = 'linear-gradient(135deg, #fef2f2, #fee2e2)';
+    absdEl.style.border = '1px solid #fecaca';
+  } else {
+    absdEl.style.background = 'linear-gradient(135deg, #ecfdf5, #d1fae5)';
+    absdEl.style.border = '1px solid #a7f3d0';
+  }
+  document.getElementById('absdLabel').style.color = absdRate > 0 ? '#991b1b' : '#166534';
+  const natLabel = n1 === 'SC' ? 'Singapore Citizen' : n1 === 'SPR' ? 'Permanent Resident' : 'Foreigner';
+  const propLabel = o1 === 0 ? 'First' : o1 === 1 ? 'Second' : 'Third+';
+  document.getElementById('absdDesc').textContent = natLabel + ' ‚Ä¢ ' + propLabel + ' property';
+  document.getElementById('absdDesc').style.color = absdRate > 0 ? '#dc2626' : '#22c55e';
+  document.getElementById('absdRate').textContent = (absdRate * 100).toFixed(0) + '%';
+  document.getElementById('absdRate').style.color = absdRate > 0 ? '#dc2626' : '#22c55e';
+
+  // Joint purchase sections
+  const showJoint = hasSecond;
+  document.getElementById('buyer2Section').style.display = showJoint ? '' : 'none';
+  document.getElementById('buyer2IncomeSection').style.display = showJoint ? '' : 'none';
+  document.getElementById('buyer2FundsSection').style.display = showJoint ? '' : 'none';
+  document.getElementById('buyer1IncomeLabel').style.display = showJoint ? 'flex' : 'none';
+  document.getElementById('buyer1FundsLabel').style.display = showJoint ? 'flex' : 'none';
+  document.getElementById('incomeSubtext').textContent = showJoint ? 'Combined household income' : 'Your monthly earnings';
+  document.getElementById('cashSubtext').textContent = showJoint ? 'Combined funds available' : 'Your available funds';
+  document.getElementById('jointBadge').style.display = showJoint ? '' : 'none';
+
+  // Hero result card
+  document.getElementById('totalCost').textContent = fmt(total);
+  document.getElementById('monthlyMortgage').textContent = fmt(monthly);
+  document.getElementById('loanAmount').textContent = fmt(loan);
+  document.getElementById('tenureDisplay').textContent = tenure + ' years';
+
+  // Safety net
+  const safetyBox = document.getElementById('safetyBox');
+  const safetyDisp = document.getElementById('safetyDisplay');
+  safetyDisp.textContent = safety + ' months';
+  if (safety >= 12) {
+    safetyBox.style.background = 'rgba(34,197,94,0.2)';
+    safetyDisp.style.color = '#4ade80';
+  } else if (safety >= 6) {
+    safetyBox.style.background = 'rgba(234,179,8,0.2)';
+    safetyDisp.style.color = '#fbbf24';
+  } else {
+    safetyBox.style.background = 'rgba(239,68,68,0.2)';
+    safetyDisp.style.color = '#f87171';
+  }
+
+  // Affordability status
+  const ac = document.getElementById('affordCard');
+  const ai = document.getElementById('affordIcon');
+  const at = document.getElementById('affordTitle');
+  const ad = document.getElementById('affordDesc');
+  if (ok) {
+    ac.style.background = 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)';
+    ac.style.border = '2px solid #a7f3d0';
+    ac.style.boxShadow = '0 10px 25px rgba(16,185,129,0.15)';
+    ai.style.background = 'linear-gradient(135deg, #10b981, #34d399)';
+    ai.style.boxShadow = '0 8px 20px rgba(16,185,129,0.3)';
+    ai.textContent = '‚úì';
+    at.textContent = 'You Can Afford This! üéâ';
+    at.style.color = '#065f46';
+    ad.textContent = 'You have sufficient funds with ' + fmt(totalCash + totalCPF - total) + ' remaining.';
+    ad.style.color = '#047857';
+  } else {
+    ac.style.background = 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)';
+    ac.style.border = '2px solid #fecaca';
+    ac.style.boxShadow = '0 10px 25px rgba(239,68,68,0.15)';
+    ai.style.background = 'linear-gradient(135deg, #ef4444, #f87171)';
+    ai.style.boxShadow = '0 8px 20px rgba(239,68,68,0.3)';
+    ai.textContent = '!';
+    at.textContent = 'Shortfall Detected';
+    at.style.color = '#991b1b';
+    ad.textContent = 'Cash shortfall: ' + fmt(shortfall) + (cpfShortfall > 0 ? ' | CPF shortfall: ' + fmt(cpfShortfall) : '');
+    ad.style.color = '#b91c1c';
+  }
+
+  // Stamp duty breakdown
+  document.getElementById('bsdAmount').textContent = fmt(_bsd);
+  const absdRow = document.getElementById('absdRow');
+  if (_absd > 0) {
+    absdRow.style.background = 'linear-gradient(135deg, #fef2f2, #fee2e2)';
+    absdRow.style.border = '1px solid #fecaca';
+  } else {
+    absdRow.style.background = '#f8fafc';
+    absdRow.style.border = 'none';
+  }
+  document.getElementById('absdRowLabel').style.color = _absd > 0 ? '#991b1b' : '#1e293b';
+  document.getElementById('absdRowLabel').innerHTML = 'Additional BSD (ABSD)' + (absdRate > 0 ? ' <span style="font-size:0.75rem;background:#dc2626;color:white;padding:0.125rem 0.5rem;border-radius:0.25rem;">' + (absdRate * 100).toFixed(0) + '%</span>' : '');
+  document.getElementById('absdAmount').textContent = fmt(_absd);
+  document.getElementById('absdAmount').style.color = _absd > 0 ? '#dc2626' : '#1e293b';
+  document.getElementById('totalStamp').textContent = fmt(stamp);
+
+  // Funds required breakdown
+  const fbEl = document.getElementById('fundsBreakdown');
+  const rows = [
+    ['Downpayment', dp, Math.round((1 - ltv) * 100) + '% of price'],
+    ['Stamp Duties', stamp, 'BSD + ABSD'],
+    ['Legal & Misc', legal, 'Estimated fees'],
+  ];
+  fbEl.innerHTML = rows.map(([label, value, sub]) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 0;border-bottom:1px solid #f1f5f9;">
+      <div><div style="font-weight:500;color:#475569;">${label}</div><div style="font-size:0.7rem;color:#94a3b8;">${sub}</div></div>
+      <div style="font-weight:600;color:#1e293b;font-feature-settings:'tnum';">${fmt(value)}</div>
+    </div>
+  `).join('');
+  document.getElementById('cashRequired').textContent = fmt(cashNeed);
+  document.getElementById('cpfUsable').textContent = fmt(cpfNeed);
+  document.getElementById('fundsNote').innerHTML = 'üí° Your funds: <strong>' + fmt(totalCash) + '</strong> cash + <strong>' + fmt(totalCPF) + '</strong> CPF';
+
+  // Loan eligibility
+  document.getElementById('maxLoanDisplay').textContent = fmt(_maxLoan);
+  document.getElementById('incomeLabel2').textContent = hasSecond ? 'Combined Assessable Income' : 'Assessable Income';
+  document.getElementById('incomeDisplay').textContent = fmt(totalIncome);
+  document.getElementById('maxPaymentDisplay').textContent = fmt(totalIncome * 0.55);
+
+  // Progress steps
+  updateSteps();
+}
+
+function updateSteps() {
+  // Determine active step based on form state
+  const hasIncome = getVal('monthlyIncome1') > 0;
+  const hasCash = getVal('cash1') > 0;
+  let step = 1;
+  if (hasIncome) step = 2;
+  if (hasIncome && hasCash) step = 3;
+
+  document.getElementById('stepProgress').style.width = ((step - 1) * 50) + '%';
+
+  [1,2,3].forEach(i => {
+    const dot = document.getElementById('step' + i);
+    const label = i > 1 ? document.getElementById('step' + i + 'Label') : null;
+    if (i <= step) {
+      dot.style.background = 'linear-gradient(135deg, #3b82f6, #8b5cf6)';
+      dot.style.color = 'white';
+      if (label) label.style.color = '#3b82f6';
+    } else {
+      dot.style.background = 'white';
+      dot.style.color = '#94a3b8';
+      if (label) label.style.color = '#94a3b8';
+    }
+  });
+}
+
+// ‚îÄ‚îÄ Lead Capture Modal ‚îÄ‚îÄ
+function openModal() {
+  if (submitted) return;
+  document.getElementById('modal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+function handleSubmit(e) {
+  e.preventDefault();
+  const name = document.getElementById('formName').value.trim();
+  const email = document.getElementById('formEmail').value.trim();
+  const phone = document.getElementById('formPhone').value.trim();
+  const consent = document.getElementById('consentCheck').checked;
+  let valid = true;
+
+  // Clear errors
+  ['errName','errEmail','errPhone','errConsent'].forEach(id => document.getElementById(id).textContent = '');
+  document.getElementById('consentBox').style.border = '1px solid #e2e8f0';
+
+  if (!name) { document.getElementById('errName').textContent = 'Name is required'; valid = false; }
+  if (!email) { document.getElementById('errEmail').textContent = 'Email is required'; valid = false; }
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('errEmail').textContent = 'Please enter a valid email'; valid = false; }
+  if (!phone) { document.getElementById('errPhone').textContent = 'Phone number is required'; valid = false; }
+  else if (!/^[+]?[\d\s-]{8,}$/.test(phone.replace(/\s/g, ''))) { document.getElementById('errPhone').textContent = 'Please enter a valid phone number'; valid = false; }
+  if (!consent) { document.getElementById('errConsent').textContent = 'You must consent to proceed'; document.getElementById('consentBox').style.border = '2px solid #dc2626'; valid = false; }
+
+  if (!valid) return;
+
+  submitted = true;
+  closeModal();
+  document.getElementById('ctaArea').innerHTML = `
+    <div style="background:linear-gradient(135deg,#10b981 0%,#059669 100%);border-radius:1rem;padding:2rem;text-align:center;color:white;box-shadow:0 10px 30px rgba(16,185,129,0.3);">
+      <div style="font-size:3rem;margin-bottom:0.5rem;">‚úÖ</div>
+      <div style="font-size:1.25rem;font-weight:700;margin-bottom:0.5rem;">Report Request Received!</div>
+      <div style="opacity:0.9;">Alson Mah will contact you within 1‚Äì2 business days with your personalised analysis.</div>
+    </div>`;
+}
+
+// ‚îÄ‚îÄ Bind All Inputs ‚îÄ‚îÄ
+const inputIds = [
+  'propertyPrice','ltv','age1','nationality1','propertiesOwned1',
+  'monthlyIncome1','variableIncome1','bonus1','commitments1','cash1','cpf1',
+  'hasSecondBuyer','nationality2','propertiesOwned2','age2',
+  'monthlyIncome2','variableIncome2','bonus2','commitments2','cash2','cpf2'
+];
+inputIds.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', recalc);
+  if (el) el.addEventListener('change', recalc);
+});
+
+// ‚îÄ‚îÄ Initial Calculation ‚îÄ‚îÄ
+recalc();
+</script>
+</body>
+</html>
