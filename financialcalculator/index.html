@@ -1116,17 +1116,31 @@ ${!affordable ? `Cash Shortfall: S$${Math.round(shortfall).toLocaleString()}` : 
       lastName: lastName,
       phone: phone,
       fieldValues: [
-        // Store calculator data in custom fields (these will need to be created in AC)
-        { field: '1', value: String(Math.round(p)) }, // Property Price
-        { field: '2', value: String(Math.round(ltv * 100)) + '%' }, // LTV Ratio
-        { field: '3', value: natMap[n1] || n1 }, // Nationality
-        { field: '4', value: String(o1) }, // Properties Owned
-        { field: '5', value: 'S$' + Math.round(stamp).toLocaleString() }, // Total Stamp Duty
-        { field: '6', value: 'S$' + Math.round(loan).toLocaleString() }, // Loan Amount
-        { field: '7', value: 'S$' + Math.round(monthly).toLocaleString() }, // Monthly Mortgage
-        { field: '8', value: 'S$' + Math.round(total).toLocaleString() }, // Total Upfront Cost
-        { field: '9', value: affordable ? 'Affordable' : 'Shortfall' }, // Affordability Status
-        { field: '10', value: String(safety) + ' months' } // Safety Net
+        // Property Calculator Data - Custom Fields (IDs 2-25)
+        { field: '2', value: 'S$' + Math.round(p).toLocaleString() }, // Property Price
+        { field: '3', value: String(Math.round(ltv * 100)) + '%' }, // LTV Ratio
+        { field: '4', value: natMap[n1] || n1 }, // Buyer Nationality
+        { field: '5', value: String(o1) }, // Properties Owned
+        { field: '6', value: hasSecond ? 'Yes' : 'No' }, // Is Joint Purchase
+        { field: '7', value: 'S$' + Math.round(totalIncome).toLocaleString() }, // Monthly Income
+        { field: '8', value: 'S$' + Math.round(totalCash).toLocaleString() }, // Available Cash
+        { field: '9', value: 'S$' + Math.round(totalCPF).toLocaleString() }, // CPF OA Balance
+        { field: '10', value: 'S$' + Math.round(_bsd).toLocaleString() }, // BSD Amount
+        { field: '11', value: String(Math.round(absdRate * 100)) + '%' }, // ABSD Rate
+        { field: '12', value: 'S$' + Math.round(_absd).toLocaleString() }, // ABSD Amount
+        { field: '13', value: 'S$' + Math.round(stamp).toLocaleString() }, // Total Stamp Duty
+        { field: '14', value: 'S$' + Math.round(_maxLoan).toLocaleString() }, // Max Loan Eligible
+        { field: '15', value: 'S$' + Math.round(loan).toLocaleString() }, // Actual Loan Amount
+        { field: '16', value: String(tenure) + ' years' }, // Loan Tenure
+        { field: '17', value: 'S$' + Math.round(monthly).toLocaleString() }, // Monthly Mortgage
+        { field: '18', value: 'S$' + Math.round(dp).toLocaleString() }, // Downpayment
+        { field: '19', value: 'S$' + Math.round(cashNeed).toLocaleString() }, // Cash Required
+        { field: '20', value: 'S$' + Math.round(total - cashNeed).toLocaleString() }, // CPF Usable
+        { field: '21', value: 'S$' + Math.round(total).toLocaleString() }, // Total Upfront Cost
+        { field: '22', value: 'S$' + Math.round(shortfall).toLocaleString() }, // Cash Shortfall
+        { field: '23', value: 'S$' + Math.round(cpfShortfall).toLocaleString() }, // CPF Shortfall
+        { field: '24', value: String(safety) }, // Safety Net Months
+        { field: '25', value: affordable ? 'Can Afford' : 'Shortfall Detected' } // Affordability Status
       ]
     }
   };
