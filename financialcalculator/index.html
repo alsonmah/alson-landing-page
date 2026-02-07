@@ -1227,13 +1227,18 @@ ${!affordable ? `Cash Shortfall: S$${Math.round(shortfall).toLocaleString()}` : 
           submission_date: new Date().toISOString()
     };
 
-    fetch(zapierWebhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(zapierData)
-    })
-    .then(response => console.log('Zapier webhook sent:', response.status))
-    .catch(err => console.log('Zapier webhook error:', err));
+    // Send as URL-encoded form data (works better with Zapier webhooks from browser)
+          const formData = new URLSearchParams();
+          Object.keys(zapierData).forEach(key => formData.append(key, zapierData[key]));
+
+          fetch(zapierWebhookUrl, {
+                      method: 'POST',
+                      mode: 'no-cors',
+                      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                      body: formData.toString()
+          })
+          .then(() => console.log('Zapier webhook sent'))
+          .catch(err => console.log('Zapier webhook error:', err));
   
 
   submitted = true;
