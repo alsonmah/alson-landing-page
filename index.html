@@ -1986,7 +1986,7 @@
                                             const response = await fetch('/api/webhook', {
                                                                     method: 'POST',
                                                                     headers: { 'Content-Type': 'application/json' },
-                                                                    body: JSON.stringify(data)
+                                                                    body: JSON.stringify({...data, firstname: data.name.split(' ')[0] || '', lastname: data.name.split(' ').slice(1).join(' ') || ''})
                                             });
                                             if (response.ok) {
                                                                     console.log('Lead sent to HubSpot + ActiveCampaign via API proxy');
