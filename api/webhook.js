@@ -21,18 +21,13 @@ export default async function handler(req, res) {
   }
 
   try {
-        // Convert JSON body to URL-encoded form data for Zapier
-      const formData = new URLSearchParams();
+        // Send JSON body directly to Zapier for proper field parsing
         const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-
-      Object.keys(body).forEach(key => {
-              formData.append(key, body[key]);
-      });
 
       const response = await fetch(webhookUrl, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-              body: formData.toString()
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body)
       });
 
       console.log('Zapier webhook response:', response.status);
