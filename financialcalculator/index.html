@@ -1181,7 +1181,6 @@ ${!affordable ? `Cash Shortfall: S$${Math.round(shortfall).toLocaleString()}` : 
 
     // ============ ZAPIER WEBHOOK INTEGRATION ============
     // Send ALL calculator data to Zapier webhook (syncs to ActiveCampaign with custom fields)
-    const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/26297437/ue22hwv/';
     const zapierData = {
           // Basic contact info
           email: email,
@@ -1231,9 +1230,8 @@ ${!affordable ? `Cash Shortfall: S$${Math.round(shortfall).toLocaleString()}` : 
           const formData = new URLSearchParams();
           Object.keys(zapierData).forEach(key => formData.append(key, zapierData[key]));
 
-          fetch(zapierWebhookUrl, {
+          fetch('/api/webhook', {
                       method: 'POST',
-                      mode: 'no-cors',
                       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                       body: formData.toString()
           })
