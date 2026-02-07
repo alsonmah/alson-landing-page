@@ -1179,6 +1179,63 @@ ${!affordable ? `Cash Shortfall: S$${Math.round(shortfall).toLocaleString()}` : 
   .then(data => console.log('ActiveCampaign subscription:', data))
   .catch(err => console.log('ActiveCampaign error:', err));
 
+    // ============ ZAPIER WEBHOOK INTEGRATION ============
+    // Send ALL calculator data to Zapier webhook (syncs to ActiveCampaign with custom fields)
+    const zapierWebhookUrl = 'https://hooks.zapier.com/hooks/catch/26297437/ue22hwv/';
+    const zapierData = {
+          // Basic contact info
+          email: email,
+          firstname: firstName,
+          lastname: lastName,
+          phone: phone,
+
+          // Property Details
+          property_price: String(Math.round(p)),
+          ltv_ratio: String(Math.round(ltv * 100)) + '%',
+          buyer_nationality: natMap[n1] || n1,
+          properties_owned: o1 === 0 ? 'First Property' : o1 === 1 ? 'Second Property' : 'Third+ Property',
+          is_joint_purchase: hasSecond ? 'Yes' : 'No',
+
+          // Income & Funds
+          monthly_income: String(Math.round(totalIncome)),
+          available_cash: String(Math.round(totalCash)),
+          cpf_oa_balance: String(Math.round(totalCPF)),
+
+          // Stamp Duties
+          bsd_amount: String(Math.round(_bsd)),
+          absd_rate: String(Math.round(absdRate * 100)) + '%',
+          absd_amount: String(Math.round(_absd)),
+          total_stamp_duty: String(Math.round(stamp)),
+
+          // Financing
+          max_loan_eligible: String(Math.round(_maxLoan)),
+          actual_loan_amount: String(Math.round(loan)),
+          loan_tenure: String(tenure),
+          monthly_mortgage: String(Math.round(monthly)),
+
+          // Costs & Affordability
+          downpayment: String(Math.round(dp)),
+          cash_required: String(Math.round(cashNeed)),
+          cpf_usable: String(Math.round(total - cashNeed)),
+          total_upfront_cost: String(Math.round(total)),
+          cash_shortfall: String(Math.round(shortfall)),
+          cpf_shortfall: String(Math.round(cpfShortfall)),
+          safety_net_months: String(safety),
+          affordability_status: affordable ? 'Can Afford' : 'Shortfall Detected',
+
+          // Timestamp
+          submission_date: new Date().toISOString()
+    };
+
+    fetch(zapierWebhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(zapierData)
+    })
+    .then(response => console.log('Zapier webhook sent:', response.status))
+    .catch(err => console.log('Zapier webhook error:', err));
+  
+
   submitted = true;
   closeModal();
   document.getElementById('ctaArea').innerHTML = `
