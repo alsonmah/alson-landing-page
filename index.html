@@ -1980,23 +1980,23 @@
                 submitted_at: new Date().toISOString()
             };
             
-            // ============ ZAPIER WEBHOOK ============
-            // This sends leads to HubSpot + ActiveCampaign
-            // Replace URL below with your Zapier webhook
-            const ZAPIER_WEBHOOK = 'YOUR_ZAPIER_WEBHOOK_URL';
-            
-            if (ZAPIER_WEBHOOK !== 'YOUR_ZAPIER_WEBHOOK_URL') {
-                try {
-                    await fetch(ZAPIER_WEBHOOK, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(data)
-                    });
-                    console.log('Lead sent to HubSpot + ActiveCampaign');
-                } catch (err) { console.log('Webhook sent'); }
-            }
-            // ========================================
+                        // ============ ZAPIER WEBHOOK (via secure API proxy) ============
+                        // Sends leads to HubSpot + ActiveCampaign via /api/webhook
+                        try {
+                                            const response = await fetch('/api/webhook', {
+                                                                    method: 'POST',
+                                                                    headers: { 'Content-Type': 'application/json' },
+                                                                    body: JSON.stringify(data)
+                                            });
+                                            if (response.ok) {
+                                                                    console.log('Lead sent to HubSpot + ActiveCampaign via API proxy');
+                                            } else {
+                                                                    console.log('Webhook response:', response.status);
+                                            }
+                        } catch (err) {
+                                            console.log('Webhook error:', err);
+                        }
+                        // ===========================================================
             
             // Success state
             document.getElementById('form').style.display = 'none';
