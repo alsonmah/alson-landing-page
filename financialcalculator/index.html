@@ -953,291 +953,99 @@ function handleSubmit(e) {
 
   if (!valid) return;
 
-  // Split name into first and last name
-  const nameParts = name.split(' ');
-  const firstName = nameParts[0] || '';
-  const lastName = nameParts.slice(1).join(' ') || '';
-
-  // ============ GATHER ALL CALCULATOR DATA ============
-  const p = getVal('propertyPrice');
+  // Collect all calculator data
+  const propertyPrice = getVal('propertyPrice');
   const ltv = getVal('ltv');
-  const n1 = getStr('nationality1');
-  const o1 = getVal('propertiesOwned1');
-  const a1 = getVal('age1');
-  const i1 = getVal('monthlyIncome1');
-  const v1 = getVal('variableIncome1');
-  const b1 = getVal('bonus1');
-  const cm1 = getVal('commitments1');
-  const cash1 = getVal('cash1');
-  const cpf1 = getVal('cpf1');
-  const hasSecond = document.getElementById('hasSecondBuyer').checked;
-  const n2 = getStr('nationality2');
-  const o2 = getVal('propertiesOwned2');
-  const a2 = getVal('age2');
-  const i2 = getVal('monthlyIncome2');
-  const v2 = getVal('variableIncome2');
-  const b2 = getVal('bonus2');
-  const cm2 = getVal('commitments2');
-  const cash2 = getVal('cash2');
-  const cpf2 = getVal('cpf2');
+  const hasSecondBuyer = document.getElementById('hasSecondBuyer').checked;
 
-  // Recalculate all values
-  const income1 = i1 + v1 * 0.7 + b1 / 12 * 0.7;
-  const income2 = hasSecond ? (i2 + v2 * 0.7 + b2 / 12 * 0.7) : 0;
-  const totalIncome = income1 + income2;
-  const totalCommitments = cm1 + (hasSecond ? cm2 : 0);
-  const totalCash = cash1 + (hasSecond ? cash2 : 0);
-  const totalCPF = cpf1 + (hasSecond ? cpf2 : 0);
-
-  const relevantAge = hasSecond ? (ltv >= 0.75 ? Math.max(a1, a2) : Math.min(a1, a2)) : a1;
-  const tenure = Math.max(5, ltv >= 0.75 ? Math.min(65 - relevantAge, 30) : Math.min(75 - relevantAge, 35));
-
-  const _bsd = calcBSD(p);
-  const absdRate = hasSecond ? Math.max(getABSDRate(n1, o1), getABSDRate(n2, o2)) : getABSDRate(n1, o1);
-  const _absd = calcABSD(p, n1, o1, n2, o2, hasSecond);
-  const stamp = _bsd + _absd;
-
-  const _maxLoan = calcMaxLoan(totalIncome, totalCommitments, tenure);
-  const loan = Math.min(_maxLoan, p * ltv);
-
-  const minCashPct = ltv >= 0.75 ? 0.05 : ltv >= 0.55 ? 0.10 : 0.25;
-  const dp = p - loan;
-  const cpfUse = Math.min(totalCPF, Math.max(0, dp - p * minCashPct));
-  const legal = 3000;
-  const total = dp + stamp + legal;
-  const cashNeed = Math.max(p * minCashPct, dp - cpfUse) + _bsd + legal;
-  const monthly = calcPMT(loan, 0.04 / 12, tenure * 12);
-  const shortfall = Math.max(0, cashNeed - totalCash);
-  const cpfShortfall = Math.max(0, (total - cashNeed) - totalCPF);
-  const surplus = Math.max(0, totalCash - cashNeed) + Math.max(0, totalCPF - (total - cashNeed));
-  const safety = monthly > 0 ? Math.floor(surplus / monthly) : 0;
-  const affordable = shortfall === 0 && cpfShortfall === 0;
-
-  // Nationality mapping
-  const natMap = { 'SC': 'Singapore Citizen', 'SPR': 'Permanent Resident', 'Foreigner': 'Foreigner' };
-
-  // Build comprehensive message for email personalization
-  const calcSummary = `
-=== PROPERTY DETAILS ===
-Property Price: S$${p.toLocaleString()}
-LTV Ratio: ${Math.round(ltv * 100)}%
-Loan Tenure: ${tenure} years
-
-=== BUYER PROFILE ===
-Nationality: ${natMap[n1] || n1}
-Properties Owned: ${o1}
-Age: ${a1}
-Joint Purchase: ${hasSecond ? 'Yes' : 'No'}
-
-=== STAMP DUTIES ===
-BSD: S$${Math.round(_bsd).toLocaleString()}
-ABSD Rate: ${Math.round(absdRate * 100)}%
-ABSD Amount: S$${Math.round(_absd).toLocaleString()}
-Total Stamp Duty: S$${Math.round(stamp).toLocaleString()}
-
-=== FINANCING ===
-Max Loan Eligible: S$${Math.round(_maxLoan).toLocaleString()}
-Actual Loan Amount: S$${Math.round(loan).toLocaleString()}
-Monthly Mortgage: S$${Math.round(monthly).toLocaleString()}
-
-=== FUNDS REQUIRED ===
-Total Upfront Cost: S$${Math.round(total).toLocaleString()}
-Cash Required: S$${Math.round(cashNeed).toLocaleString()}
-CPF Usable: S$${Math.round(total - cashNeed).toLocaleString()}
-
-=== AFFORDABILITY ===
-Available Cash: S$${totalCash.toLocaleString()}
-Available CPF: S$${totalCPF.toLocaleString()}
-Safety Net: ${safety} months
-Status: ${affordable ? 'CAN AFFORD' : 'SHORTFALL DETECTED'}
-${!affordable ? `Cash Shortfall: S$${Math.round(shortfall).toLocaleString()}` : ''}
-`.trim();
-
-  // ============ BUILD HUBSPOT PAYLOAD ============
-  const hubspotData = {
-    fields: [
-      // Basic contact info
-      { name: 'firstname', value: firstName },
-      { name: 'lastname', value: lastName },
-      { name: 'email', value: email },
-      { name: 'phone', value: phone },
-
-      // Property Calculator Data (custom properties)
-      { name: 'property_price', value: String(Math.round(p)) },
-      { name: 'ltv_ratio', value: String(Math.round(ltv * 100)) },
-      { name: 'buyer_age', value: String(a1) },
-      { name: 'buyer_nationality', value: natMap[n1] || n1 },
-      { name: 'properties_owned', value: String(o1) },
-      { name: 'is_joint_purchase', value: hasSecond ? 'Yes' : 'No' },
-      { name: 'monthly_income', value: String(Math.round(i1 + (hasSecond ? i2 : 0))) },
-      { name: 'total_assessable_income', value: String(Math.round(totalIncome)) },
-      { name: 'available_cash', value: String(Math.round(totalCash)) },
-      { name: 'cpf_oa_balance', value: String(Math.round(totalCPF)) },
-      { name: 'bsd_amount', value: String(Math.round(_bsd)) },
-      { name: 'absd_rate', value: String(Math.round(absdRate * 100)) },
-      { name: 'absd_amount', value: String(Math.round(_absd)) },
-      { name: 'total_stamp_duty', value: String(Math.round(stamp)) },
-      { name: 'max_loan_eligible', value: String(Math.round(_maxLoan)) },
-      { name: 'loan_amount', value: String(Math.round(loan)) },
-      { name: 'monthly_mortgage', value: String(Math.round(monthly)) },
-      { name: 'downpayment', value: String(Math.round(dp)) },
-      { name: 'cash_required', value: String(Math.round(cashNeed)) },
-      { name: 'cpf_usable', value: String(Math.round(total - cashNeed)) },
-      { name: 'total_upfront_cost', value: String(Math.round(total)) },
-      { name: 'safety_net_months', value: String(safety) },
-      { name: 'affordability_status', value: affordable ? 'Affordable' : 'Shortfall' },
-      { name: 'loan_tenure', value: String(tenure) },
-
-      // Full calculation summary in message field
-      { name: 'message', value: calcSummary }
-    ],
-    context: {
-      pageUri: window.location.href,
-      pageName: 'Singapore Property Financial Calculator'
-    }
+  // Buyer 1 data
+  const buyer1 = {
+    nationality: getStr('nationality1'),
+    propertiesOwned: getVal('propertiesOwned1'),
+    age: getVal('age1'),
+    monthlyIncome: getVal('monthlyIncome1'),
+    variableIncome: getVal('variableIncome1'),
+    bonus: getVal('bonus1'),
+    commitments: getVal('commitments1'),
+    cash: getVal('cash1'),
+    cpf: getVal('cpf1')
   };
 
-  fetch('https://api.hsforms.com/submissions/v3/integration/submit/245071124/d1b90dc4-771f-4817-9eda-ae722144d76a', {
+  // Buyer 2 data (if applicable)
+  const buyer2 = hasSecondBuyer ? {
+    nationality: getStr('nationality2'),
+    propertiesOwned: getVal('propertiesOwned2'),
+    age: getVal('age2'),
+    monthlyIncome: getVal('monthlyIncome2'),
+    variableIncome: getVal('variableIncome2'),
+    bonus: getVal('bonus2'),
+    commitments: getVal('commitments2'),
+    cash: getVal('cash2'),
+    cpf: getVal('cpf2')
+  } : null;
+
+  // Calculate key metrics for CRM
+  const income1 = buyer1.monthlyIncome + buyer1.variableIncome * 0.7 + buyer1.bonus / 12 * 0.7;
+  const income2 = hasSecondBuyer ? (buyer2.monthlyIncome + buyer2.variableIncome * 0.7 + buyer2.bonus / 12 * 0.7) : 0;
+  const totalIncome = income1 + income2;
+  const totalCash = buyer1.cash + (hasSecondBuyer ? buyer2.cash : 0);
+  const totalCPF = buyer1.cpf + (hasSecondBuyer ? buyer2.cpf : 0);
+  const loan = Math.min(propertyPrice * ltv, calcMaxLoan(totalIncome, buyer1.commitments + (hasSecondBuyer ? buyer2.commitments : 0), 30));
+  const downpayment = propertyPrice - loan;
+  const bsd = calcBSD(propertyPrice);
+  const absd = calcABSD(propertyPrice, buyer1.nationality, buyer1.propertiesOwned, hasSecondBuyer ? buyer2.nationality : '', hasSecondBuyer ? buyer2.propertiesOwned : 0, hasSecondBuyer);
+  const totalStampDuty = bsd + absd;
+  const monthlyPayment = calcPMT(loan, 0.04 / 12, 30 * 12);
+
+  // Prepare webhook data
+  const webhookData = {
+    // Contact info (split name for CRM)
+    firstname: name.split(' ')[0] || '',
+    lastname: name.split(' ').slice(1).join(' ') || '',
+    email: email,
+    phone: phone,
+
+    // Property details
+    property_price: propertyPrice,
+    ltv_percentage: Math.round(ltv * 100),
+    loan_amount: Math.round(loan),
+    downpayment: Math.round(downpayment),
+
+    // Stamp duties
+    bsd: Math.round(bsd),
+    absd: Math.round(absd),
+    total_stamp_duty: Math.round(totalStampDuty),
+
+    // Financial profile
+    total_monthly_income: Math.round(totalIncome),
+    total_cash_available: Math.round(totalCash),
+    total_cpf_available: Math.round(totalCPF),
+    estimated_monthly_payment: Math.round(monthlyPayment),
+
+    // Buyer profile
+    has_second_buyer: hasSecondBuyer,
+    buyer1_nationality: buyer1.nationality,
+    buyer1_properties_owned: buyer1.propertiesOwned,
+    buyer1_age: buyer1.age,
+
+    // Source tracking
+    source: 'Financial Calculator',
+    submitted_at: new Date().toISOString()
+  };
+
+  // Add buyer 2 details if applicable
+  if (hasSecondBuyer && buyer2) {
+    webhookData.buyer2_nationality = buyer2.nationality;
+    webhookData.buyer2_properties_owned = buyer2.propertiesOwned;
+    webhookData.buyer2_age = buyer2.age;
+  }
+
+  // Send to webhook (use the same Vercel proxy as landing page)
+  fetch('https://www.alsonmah.com/api/webhook', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(hubspotData)
-  }).catch(err => console.log('HubSpot submission error:', err));
-
-  // ============ ACTIVECAMPAIGN INTEGRATION ============
-  // Add contact to ActiveCampaign and subscribe to Master Contact List (triggers email automation)
-  const acApiUrl = 'https://alsonrealestate84293.api-us1.com';
-  const acApiKey = 'e849c213badc733a4c9e55d11040c527c7779fe7289aaecfce4b62201f96f8ad90681237';
-
-  // Create/Update contact in ActiveCampaign
-  const acContactData = {
-    contact: {
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
-      phone: phone,
-      fieldValues: [
-        // Property Calculator Data - Custom Fields (IDs 2-25)
-        { field: '2', value: 'S$' + Math.round(p).toLocaleString() }, // Property Price
-        { field: '3', value: String(Math.round(ltv * 100)) + '%' }, // LTV Ratio
-        { field: '4', value: natMap[n1] || n1 }, // Buyer Nationality
-        { field: '5', value: String(o1) }, // Properties Owned
-        { field: '6', value: hasSecond ? 'Yes' : 'No' }, // Is Joint Purchase
-        { field: '7', value: 'S$' + Math.round(totalIncome).toLocaleString() }, // Monthly Income
-        { field: '8', value: 'S$' + Math.round(totalCash).toLocaleString() }, // Available Cash
-        { field: '9', value: 'S$' + Math.round(totalCPF).toLocaleString() }, // CPF OA Balance
-        { field: '10', value: 'S$' + Math.round(_bsd).toLocaleString() }, // BSD Amount
-        { field: '11', value: String(Math.round(absdRate * 100)) + '%' }, // ABSD Rate
-        { field: '12', value: 'S$' + Math.round(_absd).toLocaleString() }, // ABSD Amount
-        { field: '13', value: 'S$' + Math.round(stamp).toLocaleString() }, // Total Stamp Duty
-        { field: '14', value: 'S$' + Math.round(_maxLoan).toLocaleString() }, // Max Loan Eligible
-        { field: '15', value: 'S$' + Math.round(loan).toLocaleString() }, // Actual Loan Amount
-        { field: '16', value: String(tenure) + ' years' }, // Loan Tenure
-        { field: '17', value: 'S$' + Math.round(monthly).toLocaleString() }, // Monthly Mortgage
-        { field: '18', value: 'S$' + Math.round(dp).toLocaleString() }, // Downpayment
-        { field: '19', value: 'S$' + Math.round(cashNeed).toLocaleString() }, // Cash Required
-        { field: '20', value: 'S$' + Math.round(total - cashNeed).toLocaleString() }, // CPF Usable
-        { field: '21', value: 'S$' + Math.round(total).toLocaleString() }, // Total Upfront Cost
-        { field: '22', value: 'S$' + Math.round(shortfall).toLocaleString() }, // Cash Shortfall
-        { field: '23', value: 'S$' + Math.round(cpfShortfall).toLocaleString() }, // CPF Shortfall
-        { field: '24', value: String(safety) }, // Safety Net Months
-        { field: '25', value: affordable ? 'Can Afford' : 'Shortfall Detected' } // Affordability Status
-      ]
-    }
-  };
-
-  // First, create/sync the contact
-  fetch(acApiUrl + '/api/3/contact/sync', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Api-Token': acApiKey
-    },
-    body: JSON.stringify(acContactData)
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.contact && data.contact.id) {
-      // Subscribe contact to Master Contact List (list ID 1)
-      // This triggers the "Singapore Property Buyer Nurture Sequence" automation
-      return fetch(acApiUrl + '/api/3/contactLists', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Api-Token': acApiKey
-        },
-        body: JSON.stringify({
-          contactList: {
-            list: 1, // Master Contact List ID
-            contact: data.contact.id,
-            status: 1 // Active subscriber
-          }
-        })
-      });
-    }
-  })
-  .then(response => response ? response.json() : null)
-  .then(data => console.log('ActiveCampaign subscription:', data))
-  .catch(err => console.log('ActiveCampaign error:', err));
-
-    // ============ ZAPIER WEBHOOK INTEGRATION ============
-    // Send ALL calculator data to Zapier webhook (syncs to ActiveCampaign with custom fields)
-    const zapierData = {
-          // Basic contact info
-          email: email,
-          firstname: firstName,
-          lastname: lastName,
-          phone: phone,
-
-          // Property Details
-          property_price: String(Math.round(p)),
-          ltv_ratio: String(Math.round(ltv * 100)) + '%',
-          buyer_nationality: natMap[n1] || n1,
-          properties_owned: o1 === 0 ? 'First Property' : o1 === 1 ? 'Second Property' : 'Third+ Property',
-          is_joint_purchase: hasSecond ? 'Yes' : 'No',
-
-          // Income & Funds
-          monthly_income: String(Math.round(totalIncome)),
-          available_cash: String(Math.round(totalCash)),
-          cpf_oa_balance: String(Math.round(totalCPF)),
-
-          // Stamp Duties
-          bsd_amount: String(Math.round(_bsd)),
-          absd_rate: String(Math.round(absdRate * 100)) + '%',
-          absd_amount: String(Math.round(_absd)),
-          total_stamp_duty: String(Math.round(stamp)),
-
-          // Financing
-          max_loan_eligible: String(Math.round(_maxLoan)),
-          actual_loan_amount: String(Math.round(loan)),
-          loan_tenure: String(tenure),
-          monthly_mortgage: String(Math.round(monthly)),
-
-          // Costs & Affordability
-          downpayment: String(Math.round(dp)),
-          cash_required: String(Math.round(cashNeed)),
-          cpf_usable: String(Math.round(total - cashNeed)),
-          total_upfront_cost: String(Math.round(total)),
-          cash_shortfall: String(Math.round(shortfall)),
-          cpf_shortfall: String(Math.round(cpfShortfall)),
-          safety_net_months: String(safety),
-          affordability_status: affordable ? 'Can Afford' : 'Shortfall Detected',
-
-          // Timestamp
-          submission_date: new Date().toISOString()
-    };
-
-    // Send as URL-encoded form data (works better with Zapier webhooks from browser)
-          const formData = new URLSearchParams();
-          Object.keys(zapierData).forEach(key => formData.append(key, zapierData[key]));
-
-          fetch('/api/webhook', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                      body: formData.toString()
-          })
-          .then(() => console.log('Zapier webhook sent'))
-          .catch(err => console.log('Zapier webhook error:', err));
-  
+    body: JSON.stringify(webhookData)
+  }).catch(err => console.error('Webhook error:', err));
 
   submitted = true;
   closeModal();
