@@ -997,6 +997,15 @@ function handleSubmit(e) {
   const totalStampDuty = bsd + absd;
   const monthlyPayment = calcPMT(loan, 0.04 / 12, 30 * 12);
 
+  // Calculate affordability status
+  const minCashPct = ltv >= 0.75 ? 0.05 : ltv >= 0.55 ? 0.10 : 0.25;
+  const cpfUse = Math.min(totalCPF, Math.max(0, downpayment - propertyPrice * minCashPct));
+  const cashNeed = Math.max(propertyPrice * minCashPct, downpayment - cpfUse) + bsd + 3000; // 3000 = legal fees
+  const cpfNeed = Math.max(0, (downpayment + totalStampDuty + 3000) - cashNeed);
+  const cashShortfall = Math.max(0, cashNeed - totalCash);
+  const cpfShortfall = Math.max(0, cpfNeed - totalCPF);
+  const isAffordable = cashShortfall === 0 && cpfShortfall === 0;
+
   // Prepare webhook data
   const webhookData = {
     // Contact info (split name for CRM)
@@ -1027,6 +1036,11 @@ function handleSubmit(e) {
     buyer1_nationality: buyer1.nationality,
     buyer1_properties_owned: buyer1.propertiesOwned,
     buyer1_age: buyer1.age,
+
+    // Affordability status
+    affordability_status: isAffordable ? 'Affordable' : 'Shortfall',
+    cash_shortfall: Math.round(cashShortfall),
+    cpf_shortfall: Math.round(cpfShortfall),
 
     // Source tracking
     source: 'Financial Calculator',
