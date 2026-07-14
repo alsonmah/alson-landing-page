@@ -19,7 +19,7 @@ const CONFIG = {
   MAKE_WEBHOOK_URL: "/api/webhook", // site relay lambda → Zapier (ZAPIER_WEBHOOK_URL env on Vercel)
   CALENDAR_EMBED_URL: "",       // Booking page embed URL (Tue 8pm / Sat 10am slots) — WhatsApp fallback shown until set
   WHATSAPP_NUMBER: "6581863790",// wa.me number, country code, no +
-  PRIVACY_POLICY_URL: "/privacy",
+  PRIVACY_POLICY_URL: "https://www.propnex.com/privacy",
   MINI_COURSE_URL: ""           // 5-day mini-course opt-in (ActiveCampaign form) — WhatsApp "COURSE" fallback until set
 };
 </script>
@@ -247,7 +247,7 @@ if (CONFIG.PIXEL_ID){ fbq('init', CONFIG.PIXEL_ID); fbq('track', 'PageView'); }
 
 <div class="topbar">
   <div class="brand">THE INVESTOR’S MIND</div>
-  <div class="cea">Alson Mah<br>JNA Real Estate (PropNex)</div>
+  <div class="cea">Alson Mah · CEA Reg. R069376H<br>JNA Real Estate (PropNex)</div>
 </div>
 <div class="progress"><b id="bar"></b></div>
 
@@ -260,7 +260,7 @@ if (CONFIG.PIXEL_ID){ fbq('init', CONFIG.PIXEL_ID); fbq('track', 'PageView'); }
     <div class="footer-rule"></div>
   </div>
   <div class="footer-legal">
-    Alson Mah · JNA Real Estate (PropNex) · The Investor’s Mind.
+    Alson Mah (CEA Reg. R069376H) · JNA Real Estate (PropNex) · The Investor’s Mind.
     Your Score and insights are educational estimates based on your answers, not financial advice.
     Personalized analysis happens on your Roadmap call. <a id="pplink" href="#">Privacy Policy</a>
   </div>
