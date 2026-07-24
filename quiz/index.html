@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Property Retirement Score | The Investor’s Mind</title>
+<meta property="og:title" content="The Property Retirement Score">
+<meta property="og:description" content="Will your property actually retire you? Find out in 60 seconds — 6 tap questions, instant score.">
+<meta property="og:image" content="https://www.alsonmah.com/quiz/alson.jpg">
+<meta property="og:url" content="https://www.alsonmah.com/quiz/">
+<meta property="og:type" content="website">
 <!-- ============================================================
   PROPERTY RETIREMENT SCORE — Roadmap-theme build (Step 6, Phase 2)
   Single file. Mobile-first. Works offline for testing.
@@ -73,6 +78,8 @@ if (CONFIG.PIXEL_ID){ fbq('init', CONFIG.PIXEL_ID); fbq('track', 'PageView'); }
   @keyframes glowPulse { 0%, 100% { text-shadow: 0 0 0 rgba(176,141,62,0); } 50% { text-shadow: 0 0 60px rgba(176,141,62,0.45); } }
   @keyframes floatSlow { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,-20px) scale(1.08); } }
   @keyframes riseIn { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes popIn { 0% { opacity: 0; transform: scale(0.55); } 70% { opacity: 1; transform: scale(1.07); } 100% { opacity: 1; transform: scale(1); } }
+  .pop { animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 
   .dark { background: var(--ink); color: var(--paper); }
   .light { background: var(--paper); color: var(--ink); }
@@ -95,7 +102,9 @@ if (CONFIG.PIXEL_ID){ fbq('init', CONFIG.PIXEL_ID); fbq('track', 'PageView'); }
   .brand { font-weight: 700; font-size: 13px; letter-spacing: 0.18em; color: var(--gold); }
   .cea { font-size: 10.5px; line-height: 1.5; font-weight: 500; color: var(--slate); text-align: right; }
   .progress { height: 4px; background: var(--line-dark); }
-  .progress b { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--gold), var(--gold-mid)); transition: width 0.5s var(--ease-out); }
+  .progress b { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--gold), var(--gold-mid)); transition: width 0.5s var(--ease-out); box-shadow: 0 0 14px rgba(176,141,62,0.6); }
+  .brand { transition: color 0.3s ease, text-shadow 0.3s ease; }
+  .brand:hover { color: var(--gold-bright); text-shadow: 0 0 24px rgba(232,206,143,0.35); }
 
   /* ---------- screens ---------- */
   main { flex: 1; }
@@ -121,14 +130,26 @@ if (CONFIG.PIXEL_ID){ fbq('init', CONFIG.PIXEL_ID); fbq('track', 'PageView'); }
   .q-sub { font-weight: 500; font-size: 16px; color: var(--slate); margin: -22px 0 30px; }
 
   .opt {
-    display: block; width: 100%; text-align: left;
+    position: relative; display: block; width: 100%; text-align: left;
     font-family: 'Archivo', sans-serif; font-weight: 700; font-size: 17px; color: var(--paper);
     background: transparent; border: 2px solid var(--line-dark); border-radius: 999px;
-    padding: 17px 28px; margin-bottom: 12px; cursor: pointer;
-    transition: border-color 0.25s var(--ease-out), background 0.25s var(--ease-out), color 0.25s var(--ease-out), transform 0.25s var(--ease-out);
+    padding: 17px 52px 17px 28px; margin-bottom: 12px; cursor: pointer;
+    transition: border-color 0.25s var(--ease-out), background 0.25s var(--ease-out), color 0.25s var(--ease-out), transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out);
   }
-  .opt:hover { border-color: var(--gold); transform: translateY(-2px); }
+  .opt::after {
+    content: "→"; position: absolute; right: 24px; top: 50%; color: var(--gold); font-weight: 800;
+    opacity: 0; transform: translateY(-50%) translateX(-8px);
+    transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out);
+  }
+  .opt:hover { border-color: var(--gold); transform: translateY(-2px); background: rgba(176,141,62,0.07); box-shadow: 0 10px 26px rgba(0,0,0,0.28); }
+  .opt:hover::after { opacity: 1; transform: translateY(-50%) translateX(0); }
+  .opt:active { transform: translateY(0) scale(0.98); box-shadow: none; }
   .opt.sel { border-color: var(--gold); background: rgba(176,141,62,0.13); color: var(--gold-bright); }
+  .opt.sel::after { content: "✓"; opacity: 1; transform: translateY(-50%) translateX(0); }
+  .opt.chip { display: inline-block; width: auto; margin-right: 10px; padding: 15px 24px; }
+  .opt.chip::after { content: none; }
+  .opt.chip.sel { box-shadow: 0 0 0 4px rgba(176,141,62,0.15); }
+  .chips { margin-bottom: 8px; }
 
   textarea {
     width: 100%; font-family: 'Archivo', sans-serif; font-weight: 500; font-size: 16px; color: var(--paper);
@@ -141,13 +162,21 @@ if (CONFIG.PIXEL_ID){ fbq('init', CONFIG.PIXEL_ID); fbq('track', 'PageView'); }
 
   /* ---------- buttons ---------- */
   .btn {
-    display: block; width: 100%; text-align: center;
+    position: relative; overflow: hidden; display: block; width: 100%; text-align: center;
     font-family: 'Archivo', sans-serif; font-weight: 800; font-size: 18px; letter-spacing: 0.5px;
     background: var(--gold); color: var(--ink); border: 2px solid var(--gold); border-radius: 999px;
     padding: 19px 44px; margin-top: 18px; cursor: pointer; text-decoration: none;
     transition: all 0.35s var(--ease-out); box-shadow: 0 8px 30px rgba(176,141,62,0.25);
   }
+  .btn::before {
+    content: ""; position: absolute; top: 0; left: -80%; width: 55%; height: 100%;
+    background: linear-gradient(105deg, transparent, rgba(255,255,255,0.4), transparent);
+    transform: skewX(-20deg); transition: left 0.65s var(--ease-out); pointer-events: none;
+  }
   .btn:hover { background: var(--gold-bright); border-color: var(--gold-bright); transform: translateY(-3px); box-shadow: 0 16px 44px rgba(176,141,62,0.4); }
+  .btn:hover::before { left: 130%; }
+  .btn:active { transform: translateY(-1px) scale(0.99); }
+  .btn.ghost::before { content: none; }
   .btn:disabled { opacity: 0.35; cursor: default; transform: none; box-shadow: none; }
   .btn.ghost { background: transparent; color: var(--gold); border: 2px solid var(--gold); box-shadow: none; }
   .btn.ghost:hover { background: rgba(176,141,62,0.11); transform: translateY(-3px); }
@@ -155,8 +184,8 @@ if (CONFIG.PIXEL_ID){ fbq('init', CONFIG.PIXEL_ID); fbq('track', 'PageView'); }
   .light .btn:hover { background: var(--gold); border-color: var(--gold); box-shadow: 0 16px 44px rgba(176,141,62,0.4); }
   .light .btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--ink); box-shadow: none; }
   .light .btn.ghost:hover { color: var(--gold); border-color: var(--gold); background: rgba(176,141,62,0.11); }
-  .back { display: inline-block; background: none; border: none; font-family: 'Archivo', sans-serif; font-weight: 600; font-size: 14px; color: var(--slate); margin-top: 22px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
-  .back:hover { color: var(--gold); }
+  .back { display: inline-block; background: none; border: none; font-family: 'Archivo', sans-serif; font-weight: 600; font-size: 14px; color: var(--slate); margin-top: 22px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; transition: color 0.25s ease, transform 0.25s var(--ease-out); }
+  .back:hover { color: var(--gold); transform: translateX(-3px); }
 
   /* ---------- opt-in fields ---------- */
   .field { margin-bottom: 26px; }
@@ -202,8 +231,8 @@ if (CONFIG.PIXEL_ID){ fbq('init', CONFIG.PIXEL_ID); fbq('track', 'PageView'); }
 
   /* ---------- results: insights (dark) ---------- */
   .frame-line { font-style: italic; font-weight: 600; font-size: clamp(16px, 1.9vw, 19px); line-height: 1.55; color: var(--slate); margin: -6px 0 30px; }
-  .insight { border: 1px solid var(--line-dark); background: rgba(42,54,72,0.22); border-radius: 20px; padding: 24px 26px; margin-bottom: 16px; transition: transform 0.35s var(--ease-out), border-color 0.35s var(--ease-out); }
-  .insight:hover { transform: translateY(-4px); border-color: var(--gold); }
+  .insight { border: 1px solid var(--line-dark); background: rgba(42,54,72,0.22); border-radius: 20px; padding: 24px 26px; margin-bottom: 16px; transition: transform 0.35s var(--ease-out), border-color 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out), background 0.35s var(--ease-out); }
+  .insight:hover { transform: translateY(-4px); border-color: var(--gold); background: rgba(42,54,72,0.34); box-shadow: 0 18px 44px rgba(0,0,0,0.35); }
   .insight h3 { font-weight: 800; font-size: 18px; letter-spacing: -0.01em; color: var(--gold-bright); margin-bottom: 8px; }
   .insight p { font-weight: 500; font-size: 15px; line-height: 1.6; color: var(--slate); }
 
@@ -211,7 +240,35 @@ if (CONFIG.PIXEL_ID){ fbq('init', CONFIG.PIXEL_ID); fbq('track', 'PageView'); }
   .cta-title { font-weight: 900; font-size: clamp(30px, 5.5vw, 46px); line-height: 1.1; letter-spacing: -0.03em; }
   .cta-sub { font-weight: 500; font-size: clamp(16px, 1.9vw, 19px); line-height: 1.55; color: var(--stone); margin-top: 14px; }
   .cta-sub strong { color: var(--ink); font-weight: 800; }
-  .calbox { border: 2px dashed var(--gold-mid); border-radius: 22px; padding: 30px 18px; text-align: center; font-weight: 600; font-size: 14px; line-height: 1.6; color: var(--stone); margin-top: 24px; }
+  .calbox { border: 2px dashed var(--gold-mid); border-radius: 22px; padding: 30px 18px; text-align: center; font-weight: 600; font-size: 14px; line-height: 1.6; color: var(--stone); margin-top: 24px; transition: border-color 0.35s var(--ease-out), background 0.35s var(--ease-out); }
+  .calbox:hover { border-color: var(--gold); background: rgba(176,141,62,0.06); }
+
+  /* ---------- host strip + agent card (photo) ---------- */
+  .host { display: flex; align-items: center; gap: 14px; margin-top: 34px; }
+  .host-face {
+    width: 56px; height: 56px; border-radius: 50%; object-fit: cover; object-position: 50% 14%; flex: none;
+    border: 2px solid var(--gold); box-shadow: 0 0 0 3px rgba(176,141,62,0.18), 0 8px 24px rgba(0,0,0,0.35);
+    transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+  }
+  .host:hover .host-face { transform: scale(1.09) rotate(-2deg); box-shadow: 0 0 0 5px rgba(176,141,62,0.28), 0 12px 30px rgba(0,0,0,0.45); }
+  .host-meta b { display: block; font-weight: 800; font-size: 15px; letter-spacing: 0.2px; }
+  .host-meta span { font-weight: 500; font-size: 12.5px; color: var(--slate); }
+  .host.compact { margin: 2px 0 28px; }
+  .host.compact .host-face { width: 46px; height: 46px; }
+
+  .agent-card {
+    display: flex; align-items: center; gap: 20px; text-align: left;
+    background: #fff; border: 1px solid var(--sand); border-radius: 22px; padding: 20px 22px; margin-top: 26px;
+    box-shadow: 0 10px 34px rgba(11,15,22,0.07);
+    transition: transform 0.35s var(--ease-out), border-color 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+  }
+  .agent-card:hover { transform: translateY(-4px); border-color: var(--gold-mid); box-shadow: 0 22px 52px rgba(11,15,22,0.13); }
+  .agent-photo { flex: none; width: 104px; height: 128px; border-radius: 16px; overflow: hidden; box-shadow: 0 0 0 2px var(--gold-mid), 0 10px 26px rgba(11,15,22,0.18); }
+  .agent-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; transition: transform 0.5s var(--ease-out); }
+  .agent-card:hover .agent-photo img { transform: scale(1.06); }
+  .agent-name { font-weight: 900; font-size: 20px; letter-spacing: -0.01em; color: var(--ink); }
+  .agent-role { font-weight: 600; font-size: 12.5px; line-height: 1.5; color: var(--stone); margin-top: 3px; }
+  .agent-quote { font-style: italic; font-weight: 600; font-size: 14.5px; line-height: 1.5; color: var(--gold); margin-top: 10px; }
   .calframe { width: 100%; height: 560px; border: none; border-radius: 22px; margin-top: 24px; }
   .micro { font-weight: 500; font-size: 13px; color: var(--faded); margin-top: 12px; }
   .alt-link { font-weight: 600; font-size: 14.5px; color: var(--stone); margin-top: 18px; }
@@ -232,9 +289,16 @@ if (CONFIG.PIXEL_ID){ fbq('init', CONFIG.PIXEL_ID); fbq('track', 'PageView'); }
     .topbar { padding: 14px 5vw; }
     .cea { font-size: 9.5px; }
     .inner { padding: 44px 6vw 60px; }
-    .opt { font-size: 16px; padding: 15px 22px; }
+    .opt { font-size: 16px; padding: 15px 46px 15px 22px; }
+    .opt::after { right: 20px; }
+    .opt.chip { padding: 14px 20px; margin-right: 8px; }
     .kicker-label { font-size: 12px; letter-spacing: 4px; }
     .bar-scale { font-size: 10px; letter-spacing: 1px; }
+    .host { gap: 12px; margin-top: 28px; }
+    .host-face { width: 50px; height: 50px; }
+    .agent-card { gap: 15px; padding: 16px; }
+    .agent-photo { width: 86px; height: 106px; }
+    .agent-name { font-size: 18px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -375,6 +439,10 @@ function renderWelcome(){
       <div class="hero-sub rise" style="animation-delay:.24s">Find out in 60 seconds. Answer 5–6 tap questions and get your <strong>Property Retirement Score</strong> — instantly, with the numbers behind it.</div>
       <div class="hero-note rise" style="animation-delay:.32s">No documents needed. Educational estimate, not financial advice.</div>
       <div class="rise" style="animation-delay:.4s"><button class="btn" onclick="go(0)">Get my score&nbsp;&nbsp;→</button></div>
+      <div class="host rise" style="animation-delay:.5s">
+        <img class="host-face" src="alson.jpg" alt="Alson Mah">
+        <div class="host-meta"><b>Alson Mah</b><span>The Investor’s Mind · JNA Real Estate (PropNex) · CEA R069376H</span></div>
+      </div>
     </div>
   </section>`;
 }
@@ -386,29 +454,32 @@ function renderQuestion(i){
     <div class="kicker rise"><div class="kicker-dash"></div><div class="kicker-label">Question ${i+1} of ${qs.length}</div></div>
     <h2 class="q-title rise" style="animation-delay:.08s">${q.label}</h2>`;
   if (q.chips){
-    inner += `<div class="rise" style="animation-delay:.16s">`;
-    inner += q.chips.map(c=>`<button class="opt ${answers.q6chip===c?'sel':''}" onclick="pickChip('${c}',${i})">${c}</button>`).join("");
-    inner += `<textarea id="q6text" placeholder="Optional — in your own words (this makes your result sharper)">${esc(answers.q6text)}</textarea>
+    inner += `<div class="chips rise" style="animation-delay:.14s">`;
+    inner += q.chips.map(c=>`<button class="opt chip ${answers.q6chip===c?'sel':''}" onclick="pickChip('${c}',${i},this)">${c}</button>`).join("");
+    inner += `</div><div class="rise" style="animation-delay:.22s"><textarea id="q6text" placeholder="Optional — in your own words (this makes your result sharper)">${esc(answers.q6text)}</textarea>
       <button class="btn" id="q6next" ${answers.q6chip?"":"disabled"} onclick="answers.q6text=document.getElementById('q6text').value; go(${i+1})">Next&nbsp;&nbsp;→</button></div>`;
   } else {
-    inner += `<div class="rise" style="animation-delay:.16s">`;
-    inner += q.opts.map(o=>`<button class="opt ${answers[q.id]===o?'sel':''}" onclick="pick('${q.id}','${o.replace(/'/g,"\\'")}',${i})">${o}</button>`).join("");
-    inner += `</div>`;
+    inner += q.opts.map((o,k)=>`<button class="opt rise ${answers[q.id]===o?'sel':''}" style="animation-delay:${(0.14+k*0.06).toFixed(2)}s" onclick="pick('${q.id}','${o.replace(/'/g,"\\'")}',${i},this)">${o}</button>`).join("");
   }
   inner += `<button class="back" onclick="go(${i-1})">← Back</button>`;
   app.innerHTML = `<section class="screen dark"><div class="inner">${inner}</div></section>`;
 }
 
-function pick(id,val,i){
+function pick(id,val,i,el){
   if (!quizStartFired){ fireEvent("QuizStart",{},true); quizStartFired=true; }
   answers[id]=val;
   if (id==="q1" && val==="Renting"){ answers.q2=null; answers.q3=null; }
-  go(i+1);
+  if (el && !reducedMotion){
+    document.querySelectorAll(".opt").forEach(x=>x.classList.remove("sel"));
+    el.classList.add("sel");
+    setTimeout(()=>go(i+1), 190);
+  } else { go(i+1); }
 }
-function pickChip(c,i){
+function pickChip(c,i,el){
   if (!quizStartFired){ fireEvent("QuizStart",{},true); quizStartFired=true; }
-  answers.q6text = document.getElementById("q6text") ? document.getElementById("q6text").value : answers.q6text;
-  answers.q6chip=c; renderQuestion(i);
+  answers.q6chip=c;
+  document.querySelectorAll(".opt.chip").forEach(x=>x.classList.toggle("sel", x===el));
+  const nx = document.getElementById("q6next"); if (nx) nx.disabled = false;
 }
 
 function renderOptin(){
@@ -421,7 +492,11 @@ function renderOptin(){
       <div class="kicker rise"><div class="kicker-dash"></div><div class="kicker-label">One last step</div></div>
       <h2 class="q-title rise" style="animation-delay:.08s">Your score is ready.</h2>
       <p class="q-sub rise" style="animation-delay:.12s">Where should the breakdown go? Your result appears on the next screen — instantly.</p>
-      <div class="rise" style="animation-delay:.16s">
+      <div class="host compact rise" style="animation-delay:.15s">
+        <img class="host-face" src="alson.jpg" alt="Alson Mah">
+        <div class="host-meta"><b>Your breakdown comes from Alson Mah</b><span>The Investor’s Mind · CEA R069376H</span></div>
+      </div>
+      <div class="rise" style="animation-delay:.18s">
         <div class="field"><label for="f_name">Name</label><input type="text" id="f_name" autocomplete="name" value="${esc(answers.name)}"></div>
         <div class="field"><label for="f_phone">Mobile (WhatsApp)</label><input type="tel" id="f_phone" autocomplete="tel" inputmode="tel" value="${esc(answers.phone)}"></div>
         <div class="field"><label for="f_email">Email</label><input type="email" id="f_email" autocomplete="email" inputmode="email" value="${esc(answers.email)}"></div>
@@ -507,6 +582,14 @@ function renderResult(s,b){
     <div class="cta-block">
       <h2 class="cta-title">${primary ? c.ctaH : "Or book the call."}</h2>
       <p class="cta-sub"><strong>Your score: ${s}/100.</strong> ${c.cta}</p>
+      <div class="agent-card">
+        <div class="agent-photo"><img src="alson.jpg" alt="Alson Mah — The Investor’s Mind, JNA Real Estate (PropNex)"></div>
+        <div class="agent-info">
+          <div class="agent-name">Alson Mah</div>
+          <div class="agent-role">The Investor’s Mind · JNA Real Estate (PropNex)<br>CEA Reg. R069376H</div>
+          <p class="agent-quote">“No deck, no pitch — your numbers, on screen.”</p>
+        </div>
+      </div>
       ${CONFIG.CALENDAR_EMBED_URL
         ? `<iframe class="calframe" src="${CONFIG.CALENDAR_EMBED_URL}" title="Book your Roadmap call"></iframe>`
         : `<div class="calbox">15–20 minutes · Zoom or phone · Tue 8pm / Sat 10am<br>WhatsApp me below and we’ll lock in your slot.</div>`}
@@ -535,7 +618,7 @@ function renderResult(s,b){
       <div class="kicker centered rise"><div class="kicker-dash"></div><div class="kicker-label">Your result</div></div>
       <div class="score-eyebrow rise" style="animation-delay:.06s">PROPERTY RETIREMENT SCORE</div>
       <div class="stat-score b-${c.cls} rise" id="scoreNum" style="animation-delay:.12s"><span>0</span><span class="of">/100</span></div>
-      <div class="bandtag rise" style="background:${c.color};animation-delay:.2s">${b}</div>
+      <div class="bandtag pop" style="background:${c.color};animation-delay:.45s">${b}</div>
       <div class="scorebar rise" style="animation-delay:.28s">
         <div class="bar-track">
           <div class="bar-fill fill-${c.cls}" id="scoreFill"></div>
