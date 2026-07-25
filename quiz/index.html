@@ -533,7 +533,9 @@ function validSGMobile(raw){
 function validEmail(raw){
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(raw);
 }
+let optinSubmitted = false;
 function submitOptin(){
+  if (optinSubmitted) return; // guard: a second tap would double-fire Lead + create duplicate CRM records
   ["f_name","f_phone","f_email"].forEach(id=>{ const f=document.getElementById(id); f.classList.remove("bad"); f.removeAttribute("aria-invalid"); });
   document.getElementById("optin_err").style.display = "none";
   const n=document.getElementById("f_name").value.trim(),
@@ -546,6 +548,7 @@ function submitOptin(){
   if(!e){ optinError("Please enter your email — that’s where the full breakdown goes.", "f_email"); return; }
   if(!validEmail(e)){ optinError("Please check your email address — it doesn’t look complete (e.g. name@email.com).", "f_email"); return; }
   if(!c){ optinError("Please tick the consent box so I can send you your result."); return; }
+  optinSubmitted = true;
   Object.assign(answers,{name:n,phone:p,email:e,consent:true});
   const s = computeScore(answers), b = band(s);
   const leadId = fireEvent("Lead",{content_name:"Property Retirement Score",band:b});
