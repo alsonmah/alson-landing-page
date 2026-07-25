@@ -553,8 +553,12 @@ function submitOptin(){
   const s = computeScore(answers), b = band(s);
   const leadId = fireEvent("Lead",{content_name:"Property Retirement Score",band:b});
   if (CONFIG.MAKE_WEBHOOK_URL){
+    // _fbp/_fbc are the pixel's own cookies — forwarding them lets the server-side
+    // Conversions API event match back to the same person and ad click.
+    const cookie = n => (document.cookie.match("(^|;)\\s*"+n+"\\s*=\\s*([^;]+)")||[])[2] || "";
     fetch(CONFIG.MAKE_WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({...answers,score:s,band:b,event_id:leadId,consent_ts:new Date().toISOString(),source:"prs_quiz_v1"})}).catch(()=>{});
+      body:JSON.stringify({...answers,score:s,band:b,event_id:leadId,consent_ts:new Date().toISOString(),source:"prs_quiz_v1",
+        fbp:cookie("_fbp"),fbc:cookie("_fbc"),page_url:location.href})}).catch(()=>{});
   }
   renderResult(s,b);
 }
