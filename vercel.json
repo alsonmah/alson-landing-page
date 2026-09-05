@@ -1,1 +1,7 @@
-{}
+{
+  "rewrites": [
+    { "source": "/investmentscore", "destination": "/Investmentscore/index.html" },
+    { "source": "/InvestmentScore", "destination": "/Investmentscore/index.html" },
+    { "source": "/investment-score", "destination": "/Investmentscore/index.html" }
+  ]
+}
