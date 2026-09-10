@@ -81,24 +81,24 @@ const CONFIG = {
   /* ---------- intro / cover ---------- */
   .cover{display:grid;grid-template-columns:1fr;gap:36px;align-items:start}
   /* ---------- hero (ad-matched, one screen) ---------- */
-  .hero{display:grid;grid-template-columns:1fr;gap:32px;align-items:start;min-height:calc(100svh - 150px);padding:22px 0 26px}
+  .hero{display:grid;grid-template-columns:1fr;gap:26px;align-items:start;padding:16px 0 18px}
   .herobox{max-width:640px}
   .hero h1{margin-bottom:16px}
   .hero .sub{font-size:17.5px;line-height:1.55;color:var(--ink);margin-bottom:22px;text-wrap:pretty}
-  .host{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:14px;border-top:1px solid var(--line)}
+  .host{display:flex;align-items:center;gap:12px;margin-top:18px;padding-top:12px;border-top:1px solid var(--line)}
   .host img{width:46px;height:46px;border-radius:50%;object-fit:cover;object-position:50% 18%;border:1px solid var(--line);filter:sepia(.12) saturate(.95);flex:none}
   .host b{display:block;font-weight:normal;font-size:14px;color:var(--ink)}
   .host span{font-family:Helvetica,Arial,sans-serif;font-size:10.5px;color:var(--muted);line-height:1.5;display:block}
   .heroart{display:none}
-  .whynow{border-top:1px solid var(--ink);padding-top:26px;margin-top:6px}
+  .whynow{border-top:1px solid var(--ink);padding-top:24px;margin-top:4px}
   .endcta{max-width:640px;margin:8px auto 34px}
   @media(min-width:780px){
-    .hero{grid-template-columns:1.35fr 1fr;align-items:center;min-height:calc(100svh - 170px);padding-top:6px}
+    .hero{grid-template-columns:1.35fr 1fr;align-items:center;padding:14px 0 18px}
     .heroart{display:block}
     .mobileart{display:none}
     .host{display:none}
   }
-  @media(max-width:480px){.hero{min-height:calc(100svh - 118px)}.hero .sub{font-size:16.5px}}
+  @media(max-width:480px){.hero .sub{font-size:16.5px}}
   @media(min-width:780px){.cover{grid-template-columns:1.35fr 1fr}}
   .lede::first-letter{initial-letter:3;-webkit-initial-letter:3;color:var(--brass);font-weight:bold;padding-right:10px}
   @supports not (initial-letter:3){
