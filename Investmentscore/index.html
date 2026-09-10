@@ -82,14 +82,19 @@ const CONFIG = {
   .cover{display:grid;grid-template-columns:1fr;gap:36px;align-items:start}
   /* ---------- hero (ad-matched, one screen) ---------- */
   .hero{display:grid;grid-template-columns:1fr;gap:26px;align-items:start;padding:16px 0 18px}
-  .herobox{max-width:640px}
+  .herobox{max-width:560px}
+  .hero .sub strong{font-weight:bold;color:var(--ink)}
   .hero h1{margin-bottom:16px}
   .hero .sub{font-size:17.5px;line-height:1.55;color:var(--ink);margin-bottom:22px;text-wrap:pretty}
   .host{display:flex;align-items:center;gap:12px;margin-top:18px;padding-top:12px;border-top:1px solid var(--line)}
   .host img{width:46px;height:46px;border-radius:50%;object-fit:cover;object-position:50% 18%;border:1px solid var(--line);filter:sepia(.12) saturate(.95);flex:none}
-  .host b{display:block;font-weight:normal;font-size:14px;color:var(--ink)}
+  .host b{display:block;font-weight:normal;font-size:15px;color:var(--ink);margin-bottom:2px}
   .host span{font-family:Helvetica,Arial,sans-serif;font-size:10.5px;color:var(--muted);line-height:1.5;display:block}
   .heroart{display:none}
+  .heroart .portraitwrap{aspect-ratio:4/5}
+  .heroart .portraitwrap img{width:100%;height:100%;object-fit:cover;object-position:50% 12%}
+  .whynow .kicker{margin-bottom:14px}
+  .mobileart{margin-top:4px}
   .whynow{border-top:1px solid var(--ink);padding-top:24px;margin-top:4px}
   .endcta{max-width:640px;margin:8px auto 34px}
   @media(min-width:780px){
@@ -529,14 +534,14 @@ function showIntro(){
           <span class="mask"><span class="ln">Your 40s are your</span></span>
           <span class="mask"><span class="ln" style="animation-delay:.1s"><em>last</em> full loan cycle</span></span>
         </h1>
-        <p class="sub stagger" style="animation-delay:.14s">Your condo has spent 5 years &ldquo;holding its value&rdquo;. That comfort may cost you $300,000 at retirement. Find out where you stand in 6 questions.</p>
+        <p class="sub stagger" style="animation-delay:.14s">Your condo has spent 5 years &ldquo;holding its value&rdquo;. That comfort may cost you <strong>$300,000</strong> at retirement. Find out where you stand in 6&nbsp;questions.</p>
         <div class="stagger" style="animation-delay:.26s">
           <button class="btn" onclick="startQuiz()">Get my free score<span class="arr">&rarr;</span></button>
-          <div class="micro">6 questions &middot; 2 minutes &middot; no sign-up &middot; your score appears on screen</div>
+          <div class="micro">6 questions &middot; 2 minutes &middot; no sign-up &middot; score on screen</div>
         </div>
         <div class="host stagger" style="animation-delay:.36s">
           <img src="${PORTRAIT}" alt="Alson Mah">
-          <div><b>Alson Mah</b><span>The Investor's Mind &middot; JNA Real Estate (PropNex) &middot; CEA R069376H</span></div>
+          <div><b>Alson Mah</b><span>The Investor's Mind &middot; JNA Real Estate (PropNex)<br>CEA R069376H</span></div>
         </div>
       </div>
       <div class="heroart stagger" style="animation-delay:.3s">
@@ -552,6 +557,7 @@ function showIntro(){
         <p class="lede">Seventeen new projects are expected this year — about a third fewer than last. Rates are the lowest they've been in years, and the city-fringe districts just eased. Some people are positioned to use a window like this. Most are positioned to watch it.</p>
       </div>
       <div>
+        <div class="kicker">About Alson</div>
         <div class="mobileart">
           <div class="portraitbox"><span class="portraitwrap"><img src="${PORTRAIT}" alt="Alson Mah"></span></div>
           <div class="caption">Alson Mah &middot; Marina Bay, Singapore</div>
