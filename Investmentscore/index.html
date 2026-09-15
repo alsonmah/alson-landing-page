@@ -20,6 +20,9 @@
   Calendar + course URLs are optional — WhatsApp fallbacks show until set.
   Hero rebuilt 10 Sep 2026 to mirror the live A4 Meta ad (H1 = ad headline,
   sub = ad opening line); the editorial context now sits below the fold.
+  15 Sep 2026: value before the ask — score, two personal numbers and finding 01
+  are shown first; the 2-field form (email optional) follows and unfolds the rest.
+  CONFIG.ASK_AFTER_REVEAL flips the order back; ?demo=positioned&unlocked=1 previews the open state.
   QA shortcut: append ?demo=sidelined | positioned | firstmover
   to preview each result page with sample answers.
 ============================================================ -->
@@ -32,7 +35,9 @@ const CONFIG = {
   CALENDAR_EMBED_URL: "",        // Booking page embed URL — WhatsApp booking note shown until set
   WHATSAPP_NUMBER: "6581863790", // wa.me number (WhatsApp Business), country code, no +
   PRIVACY_POLICY_URL: "https://www.propnex.com/privacy", // same policy the /quiz page links to
-  MINI_COURSE_URL: ""            // 5-day email course opt-in — WhatsApp "COURSE" fallback until set
+  MINI_COURSE_URL: "",           // 5-day email course opt-in — WhatsApp "COURSE" fallback until set
+  ASK_AFTER_REVEAL: true,        // true = score + 2 numbers + finding 01 first, then the form (15 Sep 2026); false = form before the score
+  EMAIL_REQUIRED: false          // false = name + WhatsApp only; email is an optional "add email" link
 };
 </script>
 <style>
@@ -267,6 +272,40 @@ const CONFIG = {
   /* ---------- animation utilities ---------- */
   .screen{animation:fadeUp .45s cubic-bezier(.2,.7,.2,1) both}
   .screen.leaving{animation:fadeOut .2s ease both;pointer-events:none}
+  /* ---------- reveal-first result: two numbers, folded findings, memo, ask, sticky bar ---------- */
+  .twonums{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:2px}
+  .tn{border:1px solid var(--ink);background:var(--paper);padding:16px 16px 14px}
+  .tn b{font-size:clamp(34px,7vw,44px);font-weight:normal;line-height:1;display:inline-block;font-variant-numeric:tabular-nums}
+  .tn b+span{font-family:Helvetica,Arial,sans-serif;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-left:7px}
+  .tn p{font-size:13.5px;line-height:1.55;margin:8px 0 0;color:var(--ink)}
+  .tn p em{color:var(--brass)}
+  .tn small{display:block;font-family:Helvetica,Arial,sans-serif;font-size:10px;color:var(--muted);margin-top:7px;line-height:1.5}
+  @media(max-width:480px){.twonums{grid-template-columns:1fr}}
+  .insight.folded p{max-height:3.3em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 25%,transparent);mask-image:linear-gradient(#000 25%,transparent)}
+  .insight.folded .cont{display:block;font-family:Helvetica,Arial,sans-serif;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--brass);margin-top:4px}
+  .memo{border:1px solid var(--ink);background:var(--paper);padding:16px 18px;margin:8px 0 4px;position:relative}
+  .memo::after{content:"";position:absolute;inset:8px -8px -8px 8px;border:1px solid var(--brass-lt);z-index:-1}
+  .memohead{display:flex;justify-content:space-between;font-family:Helvetica,Arial,sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:10px}
+  .memotitle{font-size:18px;margin-bottom:10px}
+  .memolines i{display:block;height:9px;background:var(--wash);margin-bottom:7px;filter:blur(1.5px)}
+  .memofoot{font-family:Helvetica,Arial,sans-serif;font-size:10.5px;color:var(--brass);margin-top:10px;letter-spacing:.06em}
+  .askcard{background:var(--paper);border:1px solid var(--ink);padding:24px 20px 20px}
+  .askcard .kicker{margin-bottom:12px}
+  .askcard h2{margin-bottom:10px}
+  .askcard p{font-size:14.5px}
+  .telwrap{display:flex;align-items:stretch}
+  .telwrap .cc{display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-right:none;background:var(--wash);font-family:Helvetica,Arial,sans-serif;font-size:14px;color:var(--muted)}
+  .telwrap input{flex:1;width:auto;min-width:0}
+  .emailtoggle{font-family:Helvetica,Arial,sans-serif;font-size:12.5px;margin:0 0 14px}
+  .emailtoggle a{color:var(--brass)}
+  .consent{cursor:pointer}
+  .skipline{text-align:center;margin-top:14px;font-family:Helvetica,Arial,sans-serif;font-size:12.5px}
+  .skipline a{color:var(--ink);border-bottom:1px solid var(--brass);padding-bottom:1px}
+  .sentstrip{border:1px solid var(--brass);background:var(--paper);padding:12px 16px;font-family:Helvetica,Arial,sans-serif;font-size:12.5px;color:var(--ink);margin-top:34px;text-align:center}
+  .stickybar{position:fixed;left:0;right:0;bottom:0;z-index:50;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--cream);border-top:1px solid var(--ink);box-shadow:0 -8px 24px rgba(0,0,0,.06);transform:translateY(110%);transition:transform .4s cubic-bezier(.2,.7,.2,1)}
+  .stickybar.on{transform:none}
+  .stickybar .btn{max-width:600px;margin:0 auto}
+  body.hasbar{padding-bottom:84px}
   .stagger{animation:fadeUp .55s cubic-bezier(.2,.7,.2,1) both}
   @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
   /* clickable rows fade in place — a moving hit-target can swallow fast taps */
@@ -423,7 +462,7 @@ const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").match
 
 /* ---------- pixel + webhook stubs ---------- */
 const HERO_VERSION = "v2";   // ad-matched hero, 10 Sep 2026 — sent with every pixel event
-const STD_EVENTS = {Lead:true};
+const STD_EVENTS = {Lead:true, ViewContent:true, Contact:true};
 function loadPixel(){
   if(!CONFIG.PIXEL_ID || window.fbq) return;
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -654,52 +693,88 @@ function pickChip(el, c){
 }
 function doneQ6(){
   answers.q6text = document.getElementById("q6text").value;
-  step = QUESTIONS.length;                                  // 6 → opt-in
-  showOptin();
+  if(!CONFIG.ASK_AFTER_REVEAL){ step = QUESTIONS.length; showOptin(); return; }   // old order: form → score
+  step = QUESTIONS.length + 1;
+  const score = computeScore(answers), tier = tierOf(score);
+  saveState();
+  if(reduceMotion){ showResult(score, tier, {locked:true}); return; }
+  showReading(()=> showResult(score, tier, {locked:true}));
 }
 
+/* ---------- the ask (2 fields, email optional) ---------- */
+const escv = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+const waLink = msg => "https://wa.me/" + CONFIG.WHATSAPP_NUMBER + "?text=" + encodeURIComponent(msg);
+const prettyWa = () => { const n = String(CONFIG.WHATSAPP_NUMBER).replace(/\D/g,""); return n.startsWith("65") && n.length===10 ? "+65 "+n.slice(2,6)+" "+n.slice(6) : "+"+n; };
+function emailField(){
+  return `<div class="field"><label class="fl" for="f_email">Email</label>
+    <input type="email" id="f_email" name="email" autocomplete="email" inputmode="email" enterkeyhint="send" placeholder="you@example.com" value="${escv(answers.email||"")}"></div>`;
+}
+function showEmailField(){
+  const t = document.getElementById("emailtoggle"), s = document.getElementById("emailslot");
+  if(t) t.hidden = true; if(s){ s.hidden = false; const e = document.getElementById("f_email"); if(e) e.focus(); }
+  return false;
+}
+function askForm(ctx){
+  const fm = ctx.tier === "firstmover";
+  const pre = !!ctx.pre;
+  const emailReq = !!CONFIG.EMAIL_REQUIRED;
+  return `
+    <form class="askcard marks" id="askform" onsubmit="submitAsk(event)" novalidate>
+      <div class="kicker">${pre ? "Nearly there" : "Findings 02 and 03 — and what to fix first"}</div>
+      <h2>${pre ? "Your score is <em>ready</em>. Where should I send the breakdown?" : "Where should I send your <em>full breakdown</em>?"}</h2>
+      <p>${pre
+        ? "You'll see the score on the next screen either way. Afterwards I send one WhatsApp message with the two numbers behind it and the order I'd fix things in. One message, no drip."
+        : "Two more findings, the order I'd fix things in, and the two numbers above written up properly. One message, no drip."}</p>
+      <div class="field"><label class="fl" for="f_name">Name</label>
+        <input type="text" id="f_name" name="name" autocomplete="name" autocapitalize="words" enterkeyhint="next" placeholder="How should I address you?" value="${escv(answers.name||"")}"></div>
+      <div class="field"><label class="fl" for="f_mob">WhatsApp number</label>
+        <div class="telwrap"><span class="cc">+65</span><input type="tel" id="f_mob" name="tel" autocomplete="tel-national" inputmode="numeric" enterkeyhint="send" placeholder="9XXX XXXX" value="${escv(answers.mobile||"")}"></div></div>
+      ${emailReq ? emailField() : `<div class="emailtoggle" id="emailtoggle"><a href="#" onclick="return showEmailField()">Add email for the written copy</a></div><div id="emailslot" hidden>${emailField()}</div>`}
+      <label class="consent"><input type="checkbox" id="f_consent" name="consent">
+        <span>I'm okay with Alson Mah (JNA Real Estate, PropNex) messaging me about my score on WhatsApp${emailReq ? " and email" : ""}. Opt out any time. <a href="${CONFIG.PRIVACY_POLICY_URL}" target="_blank" style="color:var(--brass)">Privacy policy</a>.</span></label>
+      <div class="err" id="f_err"></div>
+      <button class="btn" type="submit" id="askbtn">${pre ? "Show my score" : "Send it to my WhatsApp"}<span class="arr">&rarr;</span></button>
+      <div class="micro">One WhatsApp message from ${prettyWa()} within a minute. Reply if you want the 15-minute call; ignore it if not.</div>
+      ${fm && !pre ? `<div class="skipline"><a href="${waLink("Hi Alson — my Investment Focus Score is "+ctx.score+" (First Mover). Skip the write-up, send me the numbers. ENTRY")}" target="_blank" onclick="pixel('Contact')">Skip the write-up — WhatsApp me the numbers now</a></div>` : ""}
+    </form>`;
+}
+
+/* old order (CONFIG.ASK_AFTER_REVEAL = false): form before the score */
 function showOptin(){
+  const score = computeScore(answers), tier = tierOf(score);
   render(`
     <div class="qwrap col">
-      <div class="kicker">Nearly there</div>
-      <h2>Your score is <em>ready</em>.</h2>
-      <p>Tell me where the follow-up should go. You'll see the score on the next screen either way — and afterwards I send one short WhatsApp message with the two numbers behind it. That's the whole campaign. No drip sequence, no daily essays.</p>
-      <div class="field"><label class="fl">Name</label>
-      <input type="text" id="f_name" placeholder="How should I address you?" value="${answers.name||""}"></div>
-      <div class="field"><label class="fl">Mobile (WhatsApp)</label>
-      <input type="tel" id="f_mob" placeholder="9XXX XXXX" value="${answers.mobile||""}"></div>
-      <div class="field"><label class="fl">Email</label>
-      <input type="email" id="f_email" placeholder="you@example.com" value="${answers.email||""}"></div>
-      <div class="consent">
-        <input type="checkbox" id="f_consent">
-        <span>I'm okay with Alson Mah (JNA Real Estate, PropNex) contacting me about my score and related property updates by WhatsApp and email. I can opt out any time. <a href="${CONFIG.PRIVACY_POLICY_URL}" target="_blank" style="color:var(--brass)">Privacy policy</a>.</span>
-      </div>
-      <div class="err" id="f_err"></div>
-      <button class="btn" onclick="submitOptin()">Show my score<span class="arr">&rarr;</span></button>
+      ${askForm({tier, score, pre:true})}
       <button class="back" onclick="step=5;showQuestion()">&larr; previous question</button>
     </div>
   `);
 }
-function submitOptin(){
-  const name = document.getElementById("f_name").value.trim();
-  const mob  = document.getElementById("f_mob").value.replace(/\D/g,"");
-  const email= document.getElementById("f_email").value.trim();
-  const ok   = document.getElementById("f_consent").checked;
-  const err  = document.getElementById("f_err");
+
+function submitAsk(ev){
+  if(ev) ev.preventDefault();
+  const name  = document.getElementById("f_name").value.trim();
+  const raw   = document.getElementById("f_mob").value.replace(/\D/g,"");
+  const sg    = /^[89]\d{7}$/.test(raw) ? raw : (/^65[89]\d{7}$/.test(raw) ? raw.slice(2) : "");
+  const emailEl = document.getElementById("f_email");
+  const email = emailEl ? emailEl.value.trim() : "";
+  const ok    = document.getElementById("f_consent").checked;
+  const err   = document.getElementById("f_err");
   let msg = "";
   if(!name) msg = "Your name's missing — even just a first name works.";
-  else if(mob.length < 8) msg = "That mobile number looks short — WhatsApp is where the follow-up lands.";
-  else if(!/.+@.+\..+/.test(email)) msg = "That email doesn't look complete.";
+  else if(!sg && raw.length < 8) msg = "That WhatsApp number looks short — 8 digits, starting with 8 or 9.";
+  else if(CONFIG.EMAIL_REQUIRED && !/.+@.+\..+/.test(email)) msg = "That email doesn't look complete.";
+  else if(email && !/.+@.+\..+/.test(email)) msg = "That email doesn't look complete.";
   else if(!ok) msg = "The consent box is the PDPA part — I can't send anything without it.";
   if(msg){ err.textContent = msg; err.style.display = "block"; return; }
   if(window.__submitted) return;              // no duplicate Lead events / webhooks
   window.__submitted = true;
-  answers.name = name; answers.mobile = mob; answers.email = email;
+  const phone = sg ? "+65"+sg : "+"+raw;      // 8-digit SG number, or a foreign number typed with its country code
+  answers.name = name; answers.mobile = sg || raw; answers.email = email;
   const score = computeScore(answers), tier = tierOf(score);
   pixel("Lead", {score:score, tier:TIERS[tier].name});
   sendWebhook({
     name: name,
-    phone: mob.startsWith("65") ? "+"+mob : "+65"+mob,
+    phone: phone,
     email: email,
     source: "investment-focus-score",
     notes: "Sticking point: " + (answers.q6chip||"—") + (answers.q6text && answers.q6text.trim() ? " | In their words: \"" + answers.q6text.trim() + "\"" : ""),
@@ -716,10 +791,29 @@ function submitOptin(){
       "PDPA Consent At": new Date().toISOString()
     }
   });
+  saveState({submitted:true});
+  if(document.getElementById("askzone")){ unlockResult(score, tier, answers.mobile); return; }
   step = QUESTIONS.length + 1;
-  if(reduceMotion){ showResult(score, tier); return; }
-  showReading(()=> showResult(score, tier));
+  if(reduceMotion){ showResult(score, tier, {locked:false, sent:answers.mobile}); return; }
+  showReading(()=> showResult(score, tier, {locked:false, sent:answers.mobile}));
 }
+
+/* ---------- remember the result (7 days, this browser only) ---------- */
+function saveState(extra){
+  try{
+    const prev = JSON.parse(localStorage.getItem("ifs_state")||"{}");
+    const score = computeScore(answers), tier = tierOf(score);
+    localStorage.setItem("ifs_state", JSON.stringify(Object.assign({}, prev, {answers, score, tier, ts:Date.now()}, extra||{})));
+  }catch(e){}
+}
+function loadState(){
+  try{
+    const s = JSON.parse(localStorage.getItem("ifs_state")||"null");
+    if(!s || !s.answers || !s.answers.q1 || !s.ts || Date.now()-s.ts > 7*86400e3) return null;
+    return s;
+  }catch(e){ return null; }
+}
+function retake(){ try{ localStorage.removeItem("ifs_state"); }catch(e){} location.search = ""; }
 
 /* ---------- interstitial ---------- */
 function showReading(done){
@@ -737,18 +831,9 @@ function showReading(done){
   setTimeout(done, 1550);
 }
 
-/* ---------- result ---------- */
-function showResult(score, tier){
-  const T = TIERS[tier];
-  const exploring = answers.q5 === "explore";
-  const C = 2*Math.PI*72;
-  const insights = INSIGHTS[tier].filter(b=>b.when(answers)).slice(0,3).map((b,i)=>`
-    <div class="insight reveal" style="transition-delay:${i*120}ms">
-      <span class="n">${String(i+1).padStart(2,"0")} —</span>
-      <h3>${b.h}</h3><p>${b.p}</p>
-    </div>`).join("");
-
-  const dims = [
+/* ---------- result: value first, then the ask ---------- */
+function dimTable(){
+  return [
     ["Focus", RUBRIC.q1[answers.q1]||0, 20],
     ["What you hold", RUBRIC.q2[answers.q2]||0, 15],
     ["Funding readiness", RUBRIC.q3[answers.q3]||0, 25],
@@ -756,21 +841,43 @@ function showResult(score, tier){
     ["Timeline", RUBRIC.q5[answers.q5]||0, 10],
     ["Clarity", scoreQ6(answers.q6chip, answers.q6text), 10]
   ];
-  const bars = dims.map((d,i)=>`
-    <div class="brow">
-      <div>
-        <div class="blabel"><span>${d[0]}</span></div>
-        <div class="btrack"><i data-w="${Math.round(d[1]/d[2]*100)}" style="transition-delay:${i*110}ms;background:${T.hex}"></i></div>
-      </div>
-      <div class="bval"><span data-val="${d[1]}">0</span> <s>/ ${d[2]}</s></div>
-    </div>`).join("");
-
-  const waMsg = encodeURIComponent("Hi Alson — my Investment Focus Score is "+score+" ("+T.name+"). ENTRY");
-  const waBtn = `<a class="btn ghost" href="https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${waMsg}" target="_blank">Rather chat first? WhatsApp me — I reply personally</a>`;
+}
+function twoNumbers(score, tier, dims){
+  const runway = ({"u35":30,"35-44":25,"45-54":15,"55+":5})[answers.q4] || 25;
+  const n1 = answers.q4 === "u35"
+    ? { b:"≈30", u:"years", p:"of loan runway — the full cycle. Private-property tenure is capped at 30 years, so age isn't your constraint yet.", s:"Indicative, full LTV. Banks assess individually." }
+    : { b:"≈"+runway, u:"years", p:"your full-LTV loan runway to 65 at your age band. This is what sizes the monthly — not the price.", s:"Indicative, full LTV. Banks assess individually." };
+  // the line with the most room that a plan can actually move (not age, not what you already own)
+  const fixable = dims.filter(d=> d[0]==="Funding readiness" || d[0]==="Focus" || d[0]==="Timeline");
+  let lever = fixable.reduce((w,d)=> (d[2]-d[1]) > (w[2]-w[1]) ? d : w);
+  const movable = (lever[2]-lever[1]) > 0;                    // a line a plan can actually move
+  if(!movable) lever = dims.reduce((w,d)=> (d[2]-d[1]) > (w[2]-w[1]) ? d : w);   // otherwise the biggest gap anywhere
+  const head = lever[2]-lever[1];
+  const room = movable
+    ? `${lever[0]} (${lever[1]}/${lever[2]}) is the line with the most room — up to ${head} points.`
+    : `What's left sits in ${lever[0]} (${lever[1]}/${lever[2]}), which no plan moves — so the call is about the shortlist, not the score.`;
+  let n2;
+  if(tier==="sidelined")       n2 = { b:41-score, u:"points", p:`from <em>Positioned</em>. ${room}` };
+  else if(tier==="positioned") n2 = { b:71-score, u:"points", p:`from <em>First Mover</em>. ${room}` };
+  else if(score>=100)          n2 = { b:"100", u:"of 100", p:"Full marks on paper. What's left isn't a score problem — it's which project, which stack, and your walk-away number." };
+  else                         n2 = { b:100-score, u:"points", p:`short of full marks. ${room}` };
+  const card = n => `<div class="tn"><b>${n.b}</b><span>${n.u}</span><p>${n.p}</p>${n.s ? `<small>${n.s}</small>` : ""}</div>`;
+  return `<div class="twonums reveal">${card(n1)}${card(n2)}</div>`;
+}
+function insightCards(list, from, folded){
+  return list.map((b,i)=>{
+    const n = String(from+i+1).padStart(2,"0");
+    if(!folded) return `<div class="insight reveal" style="transition-delay:${i*120}ms"><span class="n">${n} —</span><h3>${b.h}</h3><p>${b.p}</p></div>`;
+    const first = b.p.split(/(?<=\.)\s/)[0];
+    return `<div class="insight folded reveal" style="transition-delay:${i*120}ms"><span class="n">${n} —</span><h3>${b.h}</h3><p>${first}</p><span class="cont">continues in your WhatsApp breakdown</span></div>`;
+  }).join("");
+}
+function ctaCards(score, tier){
+  const T = TIERS[tier], exploring = answers.q5 === "explore";
+  const waBtn = `<a class="btn ghost" href="${waLink("Hi Alson — my Investment Focus Score is "+score+" ("+T.name+"). ENTRY")}" target="_blank" onclick="pixel('Contact')">Rather chat first? WhatsApp me — I reply personally</a>`;
   const calendar = CONFIG.CALENDAR_EMBED_URL
     ? `<div class="calbox"><iframe src="${CONFIG.CALENDAR_EMBED_URL}" title="Book the call"></iframe></div>`
     : `<div class="calbox">Booking happens over WhatsApp — tap below, tell me a day that works, and I'll lock the slot in.</div>`;
-
   const bookCard = `
     <div class="ctacard marks">
       <h3>${tier==="firstmover" ? "The strategy call — bring your questions." : "The Entry Plan call — fifteen minutes, your numbers on screen."}</h3>
@@ -781,13 +888,107 @@ function showResult(score, tier){
       <div class="micro">15–20 minutes · Zoom or phone · you keep the one-pager we build.</div>
       <div class="altrow">${waBtn}</div>
     </div>`;
-
   const courseCard = `
     <div class="ctacard" style="margin-bottom:18px">
       <h3>Not ready to talk to anyone? Fair.</h3>
       <p>Start with the five-day email course instead — your entry numbers, one short read a day, finished by Friday. The calendar will still be here when the numbers make it obvious.</p>
-      <a class="btn" href="${CONFIG.MINI_COURSE_URL || "https://wa.me/"+CONFIG.WHATSAPP_NUMBER+"?text="+encodeURIComponent("Hi Alson — send me day one of the five-day course. COURSE")}" target="_blank">Send me day one<span class="arr">&rarr;</span></a>
+      <a class="btn" href="${CONFIG.MINI_COURSE_URL || waLink("Hi Alson — send me day one of the five-day course. COURSE")}" target="_blank" onclick="pixel('Contact')">Send me day one<span class="arr">&rarr;</span></a>
     </div>`;
+  return `
+    <div class="panel col">
+      <div class="smallcaps">${exploring ? "Start here" : "The next fifteen minutes"}</div>
+      <div class="reveal">${exploring ? courseCard + bookCard : bookCard}</div>
+    </div>`;
+}
+function marketBlock(){
+  return `
+    <div class="panel col">
+      <div class="smallcaps">The market you'd be walking into</div>
+      <div class="ctx reveal" data-anim="ctx">
+        <div class="c"><b data-count="17" data-dp="0">0</b><span>new launches expected in 2026 — down from 26</span></div>
+        <div class="c"><b data-count="1.06" data-dp="2" data-suffix="%">0</b><span>3M SORA, Q2 2026 — a multi-year low</span></div>
+        <div class="c"><b data-count="1.4" data-dp="1" data-prefix="−" data-suffix="%">0</b><span>RCR prices, Q2 2026 — the post-launch shelf eased</span></div>
+      </div>
+    </div>`;
+}
+function lockedHTML(score, tier, rest){
+  const T = TIERS[tier];
+  const month = new Date().toLocaleString("en-GB",{month:"long",year:"numeric"});
+  const folded = rest.length ? `
+    <div class="panel col">
+      <div class="smallcaps">Findings 02 and 03</div>
+      ${insightCards(rest, 1, true)}
+      <div class="memo reveal">
+        <div class="memohead"><span>Investment Focus Memo</span><span>${month}</span></div>
+        <div class="memotitle">${T.name} &middot; ${score}/100</div>
+        <div class="memolines"><i style="width:92%"></i><i style="width:78%"></i><i style="width:86%"></i><i style="width:58%"></i></div>
+        <div class="memofoot">Written up for you &middot; sent on WhatsApp</div>
+      </div>
+    </div>` : "";
+  return folded + `<div class="panel col">${askForm({tier, score})}</div>`;
+}
+function unlockedHTML(score, tier, rest, sent){
+  const strip = sent ? `<div class="sentstrip reveal">Sent to +65 &middot;&middot;&middot;&middot;${String(sent).slice(-4)}. The same breakdown is below.</div>` : "";
+  const more = rest.length ? `
+    <div class="panel col">
+      <div class="smallcaps">Findings 02 and 03</div>
+      ${insightCards(rest, 1, false)}
+    </div>` : "";
+  return strip + more + marketBlock() + ctaCards(score, tier);
+}
+function unlockResult(score, tier, sent){
+  const zone = document.getElementById("askzone");
+  if(!zone) return;
+  const rest = INSIGHTS[tier].filter(b=>b.when(answers)).slice(0,3).slice(1);
+  zone.innerHTML = unlockedHTML(score, tier, rest, sent);
+  hideSticky(true);
+  armReveals();
+  setTimeout(()=> zone.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block:"start"}), 60);
+}
+
+/* sticky "send me the full breakdown" bar — appears once the score has counted up, hides while the form is on screen */
+let stickyIO = null;
+function showSticky(){
+  const bar = document.getElementById("stickybar"), form = document.getElementById("askform");
+  if(!bar || !form) return;
+  bar.hidden = false; document.body.classList.add("hasbar");
+  requestAnimationFrame(()=> bar.classList.add("on"));
+  if("IntersectionObserver" in window){
+    if(stickyIO) stickyIO.disconnect();
+    stickyIO = new IntersectionObserver(es=> es.forEach(e=> bar.classList.toggle("on", !e.isIntersecting)), {threshold:.12});
+    stickyIO.observe(form);
+  }
+}
+function hideSticky(remove){
+  const bar = document.getElementById("stickybar");
+  if(stickyIO){ stickyIO.disconnect(); stickyIO = null; }
+  document.body.classList.remove("hasbar");
+  if(bar){ bar.classList.remove("on"); if(remove) bar.hidden = true; }
+}
+function jumpToAsk(){
+  const form = document.getElementById("askform");
+  if(!form) return;
+  form.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block:"start"});
+  setTimeout(()=>{ const n = document.getElementById("f_name"); if(n && !n.value) n.focus({preventScroll:true}); }, reduceMotion ? 0 : 650);
+}
+
+function showResult(score, tier, opts){
+  opts = opts || {};
+  const locked = opts.locked !== false;
+  const T = TIERS[tier];
+  const C = 2*Math.PI*72;
+  const all = INSIGHTS[tier].filter(b=>b.when(answers)).slice(0,3);
+  const first = all.slice(0,1), rest = all.slice(1);
+  const dims = dimTable();
+  const bars = dims.map((d,i)=>`
+    <div class="brow">
+      <div>
+        <div class="blabel"><span>${d[0]}</span></div>
+        <div class="btrack"><i data-w="${Math.round(d[1]/d[2]*100)}" style="transition-delay:${i*110}ms;background:${T.hex}"></i></div>
+      </div>
+      <div class="bval"><span data-val="${d[1]}">0</span> <s>/ ${d[2]}</s></div>
+    </div>`).join("");
+  hideSticky(true);
 
   render(`
     <div class="scorehead">
@@ -807,30 +1008,26 @@ function showResult(score, tier){
     </div>
 
     <div class="panel col">
-      <div class="smallcaps">Where your points came from</div>
-      <div class="bars reveal" data-anim="bars">${bars}</div>
+      <div class="smallcaps">Your two numbers</div>
+      ${twoNumbers(score, tier, dims)}
     </div>
 
     <div class="panel col">
       <div class="smallcaps">What I'd tell you first</div>
-      ${insights}
+      ${insightCards(first, 0, false)}
     </div>
 
     <div class="panel col">
-      <div class="smallcaps">The market you'd be walking into</div>
-      <div class="ctx reveal" data-anim="ctx">
-        <div class="c"><b data-count="17" data-dp="0">0</b><span>new launches expected in 2026 — down from 26</span></div>
-        <div class="c"><b data-count="1.06" data-dp="2" data-suffix="%">0</b><span>3M SORA, Q2 2026 — a multi-year low</span></div>
-        <div class="c"><b data-count="1.4" data-dp="1" data-prefix="−" data-suffix="%">0</b><span>RCR prices, Q2 2026 — the post-launch shelf eased</span></div>
-      </div>
+      <div class="smallcaps">Where your points came from</div>
+      <div class="bars reveal" data-anim="bars">${bars}</div>
     </div>
 
-    <div class="panel col">
-      <div class="smallcaps">${exploring ? "Start here" : "The next fifteen minutes"}</div>
-      <div class="reveal">${exploring ? courseCard + bookCard : bookCard}</div>
-      <div class="micro" style="margin-top:18px"><a href="#" onclick="location.search='';return false" style="color:var(--muted)">Retake the questions</a></div>
-    </div>
+    <div id="askzone">${locked ? lockedHTML(score, tier, rest) : unlockedHTML(score, tier, rest, opts.sent)}</div>
+
+    <div class="micro" style="margin-top:30px"><a href="#" onclick="retake();return false" style="color:var(--muted)">Retake the questions</a></div>
+    <div class="stickybar" id="stickybar" hidden><button class="btn" onclick="jumpToAsk()">Send me the full breakdown<span class="arr">&darr;</span></button></div>
   `);
+  if(!window.__viewed){ window.__viewed = true; pixel("ViewContent", {content_name:"Investment Focus Score", content_category:T.name, score:score}); }
   requestAnimationFrame(()=>{
     setTimeout(()=>{
       document.getElementById("arc").style.strokeDashoffset = (C*(1-score/100)).toFixed(1);
@@ -844,6 +1041,7 @@ function showResult(score, tier){
       }
     }, reduceMotion?0:300);
     armReveals();
+    if(locked) setTimeout(showSticky, reduceMotion ? 300 : 2200);
   });
 }
 
@@ -871,10 +1069,20 @@ if(demo && TIERS[demo]){
     firstmover: {q1:"nl", q2:"condo", q3:"cash", q4:"35-44", q5:"0-6", q6chip:"Which project — or which district", q6text:"Deciding between two RCR projects"}
   };
   Object.assign(answers, presets[demo]);
+  CONFIG.PIXEL_ID = "";                                     // demo previews never hit the pixel
   step = QUESTIONS.length + 1;
-  showResult(computeScore(answers), demo);
+  const unlocked = new URLSearchParams(location.search).get("unlocked") === "1";
+  showResult(computeScore(answers), demo, {locked: !unlocked, sent: unlocked ? "91234567" : ""});
 } else {
-  showIntro();
+  const saved = loadState();
+  if(saved && CONFIG.ASK_AFTER_REVEAL){
+    Object.assign(answers, saved.answers);
+    step = QUESTIONS.length + 1;
+    window.__submitted = !!saved.submitted;
+    showResult(saved.score, saved.tier, {locked: !saved.submitted, sent: saved.submitted ? saved.answers.mobile : ""});
+  } else {
+    showIntro();
+  }
 }
 </script>
 </body>
