@@ -37,7 +37,8 @@ const CONFIG = {
   PRIVACY_POLICY_URL: "https://www.propnex.com/privacy", // same policy the /quiz page links to
   MINI_COURSE_URL: "",           // 5-day email course opt-in — WhatsApp "COURSE" fallback until set
   ASK_AFTER_REVEAL: true,        // true = score + 2 numbers + finding 01 first, then the form (15 Sep 2026); false = form before the score
-  EMAIL_REQUIRED: false          // false = name + WhatsApp only; email is an optional "add email" link
+  EMAIL_REQUIRED: false,         // false = name + WhatsApp only; email is an optional "add email" link
+  VERCEL_ANALYTICS: false        // flip to true once Web Analytics is enabled on the Vercel project (page-level visitors + events Meta can't strip)
 };
 </script>
 <style>
@@ -462,6 +463,18 @@ const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").match
 
 /* ---------- pixel + webhook stubs ---------- */
 const HERO_VERSION = "v2";   // ad-matched hero, 10 Sep 2026 — sent with every pixel event
+/* Vercel Web Analytics (first-party; only loads when CONFIG.VERCEL_ANALYTICS is true) */
+function loadVA(){
+  if(!CONFIG.VERCEL_ANALYTICS || window.__demo) return;
+  window.va = window.va || function(){ (window.vaq = window.vaq || []).push(arguments); };
+  const t = document.createElement("script"); t.defer = true; t.src = "/_vercel/insights/script.js";
+  document.head.appendChild(t);
+}
+const VA_NAMES = {ViewContent:"ScoreViewed", Lead:"LeadSubmitted", Contact:"WhatsAppClick", QuizStart:"QuizStart"};
+function vaEvent(evt, data){
+  if(!CONFIG.VERCEL_ANALYTICS || window.__demo || !window.va) return;
+  try{ window.va("event", {name: VA_NAMES[evt] || evt, data: Object.assign({hero: HERO_VERSION}, data||{})}); }catch(e){}
+}
 const STD_EVENTS = {Lead:true, ViewContent:true, Contact:true};
 function loadPixel(){
   if(!CONFIG.PIXEL_ID || window.fbq) return;
@@ -474,12 +487,14 @@ function loadPixel(){
   fbq('track', 'PageView', {hero: HERO_VERSION});
 }
 function pixel(evt, data){
+  vaEvent(evt, data);
   if(!CONFIG.PIXEL_ID) return;
   loadPixel();
   const id = "ifs_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
   fbq(STD_EVENTS[evt] ? 'track' : 'trackCustom', evt, Object.assign({hero: HERO_VERSION}, data||{}), {eventID:id});
 }
 loadPixel();
+loadVA();
 function sendWebhook(payload){
   if(!CONFIG.PRIVYR_WEBHOOK_URL) return;
   const body = JSON.stringify(payload);
@@ -1069,7 +1084,7 @@ if(demo && TIERS[demo]){
     firstmover: {q1:"nl", q2:"condo", q3:"cash", q4:"35-44", q5:"0-6", q6chip:"Which project — or which district", q6text:"Deciding between two RCR projects"}
   };
   Object.assign(answers, presets[demo]);
-  CONFIG.PIXEL_ID = "";                                     // demo previews never hit the pixel
+  CONFIG.PIXEL_ID = ""; window.__demo = true;               // demo previews never hit the pixel or analytics
   step = QUESTIONS.length + 1;
   const unlocked = new URLSearchParams(location.search).get("unlocked") === "1";
   showResult(computeScore(answers), demo, {locked: !unlocked, sent: unlocked ? "91234567" : ""});
