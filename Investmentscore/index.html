@@ -470,12 +470,14 @@ function loadVA(){
   const t = document.createElement("script"); t.defer = true; t.src = "/_vercel/insights/script.js";
   document.head.appendChild(t);
 }
-const VA_NAMES = {ViewContent:"ScoreViewed", Lead:"LeadSubmitted", Contact:"WhatsAppClick", QuizStart:"QuizStart"};
+const VA_NAMES = {ViewContent:"ScoreViewed", Lead:"LeadSubmitted", Contact:"WhatsAppClick", InitiateCheckout:"QuizStart", AddToCart:"Halfway"};
 function vaEvent(evt, data){
   if(!CONFIG.VERCEL_ANALYTICS || window.__demo || !window.va) return;
   try{ window.va("event", {name: VA_NAMES[evt] || evt, data: Object.assign({hero: HERO_VERSION}, data||{})}); }catch(e){}
 }
-const STD_EVENTS = {Lead:true, ViewContent:true, Contact:true};
+/* Meta drops custom events on this dataset, so the funnel steps ride on standard events:
+   InitiateCheckout = first answer tapped · AddToCart = halfway (Q3 answered) · ViewContent = score shown · Lead = form sent · Contact = WhatsApp tap */
+const STD_EVENTS = {Lead:true, ViewContent:true, Contact:true, InitiateCheckout:true, AddToCart:true};
 function loadPixel(){
   if(!CONFIG.PIXEL_ID || window.fbq) return;
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -671,7 +673,8 @@ function showQuestion(){
 let advancing = false;
 function pick(ev, id, val){
   answers[id] = val;
-  if(!quizStarted){ quizStarted = true; pixel("QuizStart"); }
+  if(id==="q3" && !window.__half){ window.__half = true; pixel("AddToCart"); }   // halfway marker
+  if(!quizStarted){ quizStarted = true; pixel("InitiateCheckout"); }
   document.querySelectorAll(".opt").forEach(b=>b.classList.remove("sel"));
   ev.currentTarget.classList.add("sel");
   if(advancing) return;                       // a double-tap must not skip a question
@@ -701,7 +704,7 @@ function showQ6(){
 }
 function pickChip(el, c){
   answers.q6chip = c;
-  if(!quizStarted){ quizStarted = true; pixel("QuizStart"); }
+  if(!quizStarted){ quizStarted = true; pixel("InitiateCheckout"); }
   document.querySelectorAll(".chip").forEach(b=>b.classList.remove("sel"));
   el.classList.add("sel");
   document.getElementById("q6btn").disabled = false;
