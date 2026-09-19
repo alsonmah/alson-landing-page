@@ -753,7 +753,7 @@ function askForm(ctx){
       <div class="err" id="f_err"></div>
       <button class="btn" type="submit" id="askbtn">${pre ? "Show my score" : "Send it to my WhatsApp"}<span class="arr">&rarr;</span></button>
       <div class="micro">One WhatsApp message from ${prettyWa()} within a minute. Reply if you want the 15-minute call; ignore it if not.</div>
-      ${fm && !pre ? `<div class="skipline"><a href="${waLink("Hi Alson — my Investment Focus Score is "+ctx.score+" (First Mover). Skip the write-up, send me the numbers. ENTRY")}" target="_blank" onclick="pixel('Contact')">Skip the write-up — WhatsApp me the numbers now</a></div>` : ""}
+      ${fm && !pre ? `<div class="skipline"><a href="${waLink("Hi Alson — my Investment Focus Score is "+ctx.score+" (First Mover). Skip the write-up, send me the numbers.")}" target="_blank" onclick="pixel('Contact')">Skip the write-up — WhatsApp me the numbers now</a></div>` : ""}
     </form>`;
 }
 
