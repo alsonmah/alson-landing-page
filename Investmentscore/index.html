@@ -36,7 +36,7 @@ const CONFIG = {
   WHATSAPP_NUMBER: "6581863790", // wa.me number (WhatsApp Business), country code, no +
   PRIVACY_POLICY_URL: "https://www.propnex.com/privacy", // same policy the /quiz page links to
   MINI_COURSE_URL: "",           // 5-day email course opt-in — WhatsApp "COURSE" fallback until set
-  ASK_AFTER_REVEAL: true,        // true = score + 2 numbers + finding 01 first, then the form (15 Sep 2026); false = form before the score
+  ASK_AFTER_REVEAL: false,       // false = form before the score (Alson, 23 Sep 2026); true = score + 2 numbers + finding 01 first, then the form
   EMAIL_REQUIRED: false,         // false = name + WhatsApp only; email is an optional "add email" link
   VERCEL_ANALYTICS: true         // Web Analytics enabled on the Vercel project 19 Sep 2026 (page-level visitors + events Meta can't strip)
 };
@@ -593,7 +593,7 @@ function showIntro(){
         <p class="sub stagger" style="animation-delay:.14s">Your condo has spent 5 years &ldquo;holding its value&rdquo;. That comfort may cost you <strong>$300,000</strong> at retirement. Find out where you stand in 6&nbsp;questions.</p>
         <div class="stagger" style="animation-delay:.26s">
           <button class="btn" onclick="startQuiz()">Get my free score<span class="arr">&rarr;</span></button>
-          <div class="micro">6 questions &middot; 2 minutes &middot; no sign-up &middot; score on screen</div>
+          <div class="micro">6 questions &middot; 2 minutes &middot; score on screen</div>
         </div>
         <div class="host stagger" style="animation-delay:.36s">
           <img src="${PORTRAIT}" alt="Alson Mah">
@@ -638,7 +638,7 @@ function showIntro(){
 
     <div class="endcta">
       <button class="btn" onclick="startQuiz()">Get my free score<span class="arr">&rarr;</span></button>
-      <div class="micro">6 questions &middot; 2 minutes &middot; no sign-up</div>
+      <div class="micro">6 questions &middot; 2 minutes</div>
     </div>
   `);
   requestAnimationFrame(()=>{
